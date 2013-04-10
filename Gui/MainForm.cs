@@ -7,11 +7,11 @@ namespace Gui
 {
     public partial class MainForm : Form
     {
-        List<String> _nicks;
-        List<String> _passwords;
-        List<String> _emails;
-        int _numberAcc = 0;
-        bool _isGeneratePassword;
+        private List<String> _nicks;
+        private List<String> _passwords;
+        private List<String> _emails;
+        private int _numberAcc = 0;
+        private bool _isGeneratePassword;
 
         public MainForm()
         {
