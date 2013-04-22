@@ -10,6 +10,11 @@ namespace AutoReg
     {
         public phpBBReg(IAntiCaptcha antiCaptcha) : base(antiCaptcha) { }
 
+        public void test213()
+        {
+
+        }
+
         public override bool reg(String email, String password, String nick)
         {
             return false;
