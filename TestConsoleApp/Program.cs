@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Drawing;
+using RecognizerPictures;
 
-namespace RecognizerPictures
+namespace TestConsoleApp
 {
-    public class IntellectBoard22AntiCaptcha
+    class Program
     {
-        public Bitmap Image { get; set; }
-        public String TextFromImage { get; set; }
-
-        public String recognizeImage(Bitmap image)
+        static void Main(string[] args)
         {
-            return String.Empty;
+            IntellectBoard22AntiCaptcha ib22 = new IntellectBoard22AntiCaptcha();
+            Bitmap image = new Bitmap(@"C:\Users\Денис\Desktop\capchta\996.jpg");
+            Program program = new Program();
+            program.deleteWhiteStripes(image);
+            Console.ReadKey();
         }
 
-        #region Обрезаем белые полосы по краям изображения
-
-        private Bitmap deleteWhiteStripes(Bitmap image)
+        public Bitmap deleteWhiteStripes(Bitmap image)
         {
             int newWidth = 0;
             int newHeight = 0;
@@ -28,7 +29,7 @@ namespace RecognizerPictures
             for (int i = 0; i < image.Width; i++)
             {
                 bool canDeleteRow = true;
-
+                
                 for (int j = 0; j < image.Height - 1; j++)
                 {
                     if (image.GetPixel(i, j).GetHashCode() != image.GetPixel(i, j + 1).GetHashCode())
@@ -45,7 +46,7 @@ namespace RecognizerPictures
                 }
             }
 
-            Bitmap newImage = new Bitmap(newWidth, image.Height);
+            Bitmap newImage = new Bitmap(newWidth,image.Height);
             int k = 0;
             foreach (int x in xCoordinatesForCopy)
             {
@@ -90,7 +91,5 @@ namespace RecognizerPictures
 
             return resultImage;
         }
-
-        #endregion
     }
 }
