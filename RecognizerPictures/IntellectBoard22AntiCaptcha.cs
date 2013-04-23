@@ -16,7 +16,7 @@ namespace RecognizerPictures
             return String.Empty;
         }
 
-        #region Обрезаем белые полосы по краям изображения
+        #region Обрезаем белые полосы по краям  изображения
 
         private Bitmap deleteWhiteStripes(Bitmap image)
         {
@@ -92,5 +92,50 @@ namespace RecognizerPictures
         }
 
         #endregion
+
+        #region разрезание капчи на отдельные буквы
+
+        public List<Bitmap> splitImageIntoChars(Bitmap image, int charWidth)
+        {
+            List<int> resultCharWidth = new List<int>();
+            List<Bitmap> chars = new List<Bitmap>();
+            int imageWidth = image.Width;
+
+            while (imageWidth > 2*charWidth)
+            {
+                resultCharWidth.Add(charWidth);
+                imageWidth -= charWidth;
+            }
+
+            if (imageWidth > 1.5*charWidth)
+            {
+                int k = (int) imageWidth/2;
+                resultCharWidth.Add(k);
+                resultCharWidth.Add(imageWidth - k);
+            }
+
+            int shift = 0;
+            foreach (int width in resultCharWidth)
+            {
+                Bitmap charImage = new Bitmap(width, image.Height);
+                int k = 0;
+                for (int i = shift; i < shift + width; i++)
+                {
+                    for (int j = 0; j < image.Height; j++)
+                    {
+                        Color color = image.GetPixel(i, j);
+                        charImage.SetPixel(k, j, color);
+                    }
+                    k++;
+                }
+                chars.Add(charImage);
+                shift += width;
+            }
+
+            return chars;
+        }
+
+        #endregion
+        
     }
 }
