@@ -16,6 +16,12 @@ namespace RecognizerPictures
             return String.Empty;
         }
 
+        //http://www.navigator61.ru/user/register
+        //http://birja-mo.ru/script/si/securimage_show.php?0.6290400929924447
+        //http://www.freelancejob.ru/js/captcha/captcha.php
+        //http://freelance-tomsk.ru/cms_input/captcha.php?session=178
+        //https://www.qiwi.ru/register/captcha.action?random=0.058002821041386765
+
         #region Обрезаем белые полосы по краям  изображения
 
         private Bitmap deleteWhiteStripes(Bitmap image)
