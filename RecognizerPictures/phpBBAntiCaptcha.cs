@@ -24,9 +24,9 @@ namespace RecognizerPictures
         private void button1_Click(object sender, EventArgs e)
         {
             MyBitMap = new Bitmap("img1.jpg");
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            /*pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox1.ClientSize = new Size(320, 50);
-            pictureBox1.Image = (Image)MyBitMap;
+            pictureBox1.Image = (Image)MyBitMap;*/
             List<string> col = new List<string>();
 
             for (int i = 0; i < 10; i++)
@@ -53,7 +53,7 @@ namespace RecognizerPictures
             //MessageBox.Show(we.Count().ToString());
             for (int i = 0; i < we.Count(); i++)
             {
-                richTextBox1.Text += qq[i].ToString() + "\n";
+                //richTextBox1.Text += qq[i].ToString() + "\n";
             }
             for (int i = 0; i < MyBitMap.Width; i++)
             {
@@ -85,9 +85,9 @@ namespace RecognizerPictures
                     }
                 }
             }
-            pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
+            /*pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox2.ClientSize = new Size(320, 50);
-            pictureBox2.Image = (Image)MyBitMap;
+            pictureBox2.Image = (Image)MyBitMap;*/
             MyBitMap.Save(Environment.CurrentDirectory + @"/ds.jpg");
             NumberOne(MyBitMap);
             /*pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -156,13 +156,13 @@ namespace RecognizerPictures
                     jjj++;
                 }
             }
-            pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
+            /*pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox3.ClientSize = new Size(30, 50);
             pictureBox3.Image = (Image)bb[0];
 
             pictureBox4.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox4.ClientSize = new Size(30, 50);
-            pictureBox4.Image = (Image)bb[1];
+            pictureBox4.Image = (Image)bb[1];*/
             /*for (int i = 0; i < MyBitMap.Width; i++)
             {
                 for (int j = 0; j < MyBitMap.Height; j++)
