@@ -95,8 +95,7 @@ namespace RecognizerPictures
         /// <returns></returns>
         public static Bitmap DeleteLinesInRow(Bitmap image, int numberOfPixelsInRow = 3, string colorName = "ff000000")
         {
-            var resultImage = new Bitmap(image.Width, image.Height);
-
+            var resultImg = new Bitmap(image.Width, image.Height);
             var newHeight = 0;
 
             for (int i = 0; i < image.Height; i++)
@@ -110,11 +109,31 @@ namespace RecognizerPictures
                 if (numberOfBlackPixelsInRow > numberOfPixelsInRow)
                 {
                     for (int j = 0; j < image.Width; j++)
-                        resultImage.SetPixel(j, newHeight, image.GetPixel(j, i));
+                        resultImg.SetPixel(j, newHeight, image.GetPixel(j, i));
                     newHeight++;
                 }
             }
-            return resultImage;
+
+            resultImg = cropImage(resultImg, new Rectangle(0, 0, resultImg.Width, newHeight));
+
+            return resultImg;
+        }
+
+        #endregion
+
+        #region Обрезает изображение
+
+        /// <summary>
+        /// Обрезает изображение по размеру квадрата
+        /// </summary>
+        /// <param name="img">Изображение</param>
+        /// <param name="cropArea">Квадрат для обрезания</param>
+        /// <returns></returns>
+        public static Bitmap cropImage(Image img, Rectangle cropArea)
+        {
+            Bitmap bmpImage = new Bitmap(img);
+            Bitmap bmpCrop = bmpImage.Clone(cropArea, bmpImage.PixelFormat);
+            return bmpCrop;
         }
 
         #endregion
@@ -133,7 +152,7 @@ namespace RecognizerPictures
         {
             var resultImage = new Bitmap(image.Width, image.Height);
 
-            var newHeight = 0;
+            var newWidth = 0;
 
             for (int i = 0; i < image.Width; i++)
             {
@@ -146,10 +165,12 @@ namespace RecognizerPictures
                 if (numberOfBlackPixelsInRow > numberOfPixelsInColumn)
                 {
                     for (int j = 0; j < image.Height; j++)
-                        resultImage.SetPixel(newHeight, j, image.GetPixel(i, j));
-                    newHeight++;
+                        resultImage.SetPixel(newWidth, j, image.GetPixel(i, j));
+                    newWidth++;
                 }
             }
+
+            resultImage = cropImage(resultImage, new Rectangle(0, 0, newWidth, resultImage.Height));
             return resultImage;
         }
 
