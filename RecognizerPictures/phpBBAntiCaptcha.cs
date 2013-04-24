@@ -66,6 +66,7 @@ namespace RecognizerPictures
                 /*PB[step].SizeMode = PictureBoxSizeMode.StretchImage;
                 PB[step].ClientSize = new Size(test[index].Width, test[index].Height);
                 PB[step].Image = (Image)test[index];*/
+
                 index++;
                 step--;
             }
