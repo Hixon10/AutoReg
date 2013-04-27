@@ -1,0 +1,22 @@
+﻿Вводная статья:
+http://robocraft.ru/blog/algorithm/558.html
+
+Отличная статья с массой ссылок внутри про Перцептрон:
+http://ru.wikipedia.org/wiki/%D0%9F%D0%B5%D1%80%D1%86%D0%B5%D0%BF%D1%82%D1%80%D0%BE%D0%BD
+
+Вводная статья про нейронные сети (Этапы решения задач):
+http://ru.wikipedia.org/wiki/%D0%98%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F_%D0%BD%D0%B5%D0%B9%D1%80%D0%BE%D0%BD%D0%BD%D0%B0%D1%8F_%D1%81%D0%B5%D1%82%D1%8C
+
+Курс на интуите: Основы теории нейроных сетей:
+http://www.intuit.ru/studies/courses/88/88/info
+
+Нейрон, общая информация:
+http://ru.wikipedia.org/wiki/%D0%98%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BD%D0%B5%D0%B9%D1%80%D0%BE%D0%BD
+
+Легендарная статья с хабры - Нейросети для чайников. Начало
+http://habrahabr.ru/post/143129/ - часть 1
+http://habrahabr.ru/post/144881/ - часть 2
+
+Пример построения сети Кохонена на C#:
+http://habrahabr.ru/post/143668/ 
+
