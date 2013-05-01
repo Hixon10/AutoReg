@@ -3,13 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using AForge.Imaging.Filters;
 
 namespace RecognizerPictures
 {
+    /// <summary>
+    /// Класс отвечает за распознание символов "0 1 2 3 4 5 6 7 8 9 a b c d e f" для переданной картинки
+    /// Класс работает с картиной, размер которой = 64 на 14
+    /// </summary>
     public class IntellectBoard22AntiCaptcha
     {
         public Bitmap Image { get; set; }
         public String TextFromImage { get; set; }
+        private const int requiredWidth = 64;
+        private const int requiredHeight = 14;
+        private const int charactersNumber = 8;
 
         public String recognizeImage(Bitmap image)
         {
@@ -24,7 +32,7 @@ namespace RecognizerPictures
 
         #region Обрезаем белые полосы по краям  изображения
 
-        private Bitmap deleteWhiteStripes(Bitmap image)
+        public Bitmap deleteWhiteStripes(Bitmap image)
         {
             int newWidth = 0;
             int newHeight = 0;
@@ -94,40 +102,43 @@ namespace RecognizerPictures
                 k++;
             }
 
-            return resultImage;
+            Bitmap newImageWithRequiredSize = new Bitmap(requiredWidth, requiredHeight);
+            Graphics.FromImage(newImageWithRequiredSize).DrawImage(resultImage, 0, 0, requiredWidth, requiredHeight);
+
+            return newImageWithRequiredSize;
+        }
+
+        #endregion
+
+        #region Биномиризация изображения
+
+        public Bitmap binarizationImage(Bitmap image)
+        {
+            Grayscale filterGrayscale = Grayscale.CommonAlgorithms.BT709;
+            //Grayscale filterGrayscale = new Grayscale(0.5, 0.419, 0.081); // R-Y
+            Bitmap grayImage = filterGrayscale.Apply(image);
+            Threshold filter = new Threshold(200);
+            filter.ApplyInPlace(grayImage);
+            return grayImage;
         }
 
         #endregion
 
         #region разрезание капчи на отдельные буквы
 
-        public List<Bitmap> splitImageIntoChars(Bitmap image, int charWidth)
+        public List<Bitmap> splitImageIntoChars(Bitmap image)
         {
-            List<int> resultCharWidth = new List<int>();
-            List<Bitmap> chars = new List<Bitmap>();
-            int imageWidth = image.Width;
-
-            while (imageWidth > 2*charWidth)
-            {
-                resultCharWidth.Add(charWidth);
-                imageWidth -= charWidth;
-            }
-
-            if (imageWidth > 1.5*charWidth)
-            {
-                int k = (int) imageWidth/2;
-                resultCharWidth.Add(k);
-                resultCharWidth.Add(imageWidth - k);
-            }
+            List<Bitmap> chars = new List<Bitmap>(charactersNumber);
+            int width = (int) requiredWidth/charactersNumber;
 
             int shift = 0;
-            foreach (int width in resultCharWidth)
+            for (int d = 0; d < width; d++)
             {
-                Bitmap charImage = new Bitmap(width, image.Height);
+                Bitmap charImage = new Bitmap(width, requiredHeight);
                 int k = 0;
                 for (int i = shift; i < shift + width; i++)
                 {
-                    for (int j = 0; j < image.Height; j++)
+                    for (int j = 0; j < requiredHeight; j++)
                     {
                         Color color = image.GetPixel(i, j);
                         charImage.SetPixel(k, j, color);

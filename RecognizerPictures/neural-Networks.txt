@@ -22,3 +22,6 @@ http://habrahabr.ru/post/143668/
 
 Релизация своей сети на c#:
 http://kernel-zone.ru/algorithms/svoya-neyronnaya-set-na-c-ischodniki.html
+
+Сборник статей по нейронным сетям:
+http://www.aiportal.ru/articles/neural-networks/1/
