@@ -20,3 +20,5 @@ http://habrahabr.ru/post/144881/ - часть 2
 Пример построения сети Кохонена на C#:
 http://habrahabr.ru/post/143668/ 
 
+Релизация своей сети на c#:
+http://kernel-zone.ru/algorithms/svoya-neyronnaya-set-na-c-ischodniki.html
