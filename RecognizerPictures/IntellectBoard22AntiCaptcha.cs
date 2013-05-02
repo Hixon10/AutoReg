@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Drawing;
 using AForge.Imaging.Filters;
+using ClassLibraryNeuralNetworks;
+using RecognizerPictures.Properties;
 
 namespace RecognizerPictures
 {
@@ -18,17 +23,31 @@ namespace RecognizerPictures
         private const int requiredWidth = 64;
         private const int requiredHeight = 14;
         private const int charactersNumber = 8;
+        private NeuralNW _net;
 
+        public IntellectBoard22AntiCaptcha()
+        {
+            _net = new NeuralNW(Directory.GetCurrentDirectory() + "\\..\\..\\..\\RecognizerPictures\\nwFiles\\IntellectBoard22.nw");
+        }
+        
         public String recognizeImage(Bitmap image)
         {
-            return String.Empty;
-        }
+            Bitmap imageWithoutWhiteStripes = deleteWhiteStripes(image);
+            Bitmap blackAndWhiteImage = binarizationImage(imageWithoutWhiteStripes);
+            List<Bitmap> symbols = splitImageIntoChars(blackAndWhiteImage);
+            StringBuilder recognizedImage = new StringBuilder();
+            String path = Environment.CurrentDirectory + "";
+            String fileName = "weight";
 
-        //http://www.navigator61.ru/user/register
-        //http://birja-mo.ru/script/si/securimage_show.php?0.6290400929924447
-        //http://www.freelancejob.ru/js/captcha/captcha.php
-        //http://freelance-tomsk.ru/cms_input/captcha.php?session=178
-        //https://www.qiwi.ru/register/captcha.action?random=0.058002821041386765
+            for (int i = 0; i < symbols.Count; i++)
+            {
+                String resultPath = path + fileName + string.Format("{0:00}",i) + ".bmp";
+                symbols[i].Save(resultPath,ImageFormat.Bmp); // сохраняет файл  с символов
+                SaveBin(path, fileName + string.Format("{0:00}", i), symbols[i]); // делает файл с весами
+                recognizedImage.Append(Test(path + "\\" + fileName + string.Format("{0:00}", i) + ".in.txt")); // распознаёт файл с весами
+            }
+            return recognizedImage.ToString();
+        }
 
         #region Обрезаем белые полосы по краям  изображения
 
@@ -119,7 +138,28 @@ namespace RecognizerPictures
             Bitmap grayImage = filterGrayscale.Apply(image);
             Threshold filter = new Threshold(200);
             filter.ApplyInPlace(grayImage);
-            return grayImage;
+            return doBlackAndWhiteImage(grayImage);
+        }
+
+        public Bitmap doBlackAndWhiteImage(Bitmap image)
+        {
+            Bitmap newImage = new Bitmap(image.Width, image.Height);
+            for (int i = 0; i < image.Width; i++)
+            {
+                for (int j = 0; j < image.Height; j++)
+                {
+                    Color pixel = image.GetPixel(i, j);
+                    if (pixel.R < 23 && pixel.G < 23 && pixel.B < 23)
+                    {
+                        newImage.SetPixel(i, j, Color.Black);
+                    }
+                    else
+                    {
+                        newImage.SetPixel(i,j,Color.White);
+                    }
+                }
+            }
+            return newImage;
         }
 
         #endregion
@@ -154,5 +194,93 @@ namespace RecognizerPictures
 
         #endregion
         
+
+        public static void SaveBin(String path, String name, Bitmap bmp)
+        {
+            var w = bmp.Width;
+            var h = bmp.Height;
+            var n = w*h;
+
+            var mas = new String[n];
+
+            for (int j = 0, k = 0; j < h; j++)
+            {
+                for (int i = 0; i < w; i++)
+                {
+                    var val = 0.3*bmp.GetPixel(i, j).R + 0.59*bmp.GetPixel(i, j).G + 0.11*bmp.GetPixel(i, j).B;
+
+                    if (val > 127)
+                    {
+                        mas[k++] = "-0,5";
+                    }
+                    else
+                    {
+                        mas[k++] = "0,5";
+                    }
+                }
+            }
+
+            String resultPath = path + "\\" + name + ".in.txt";
+            File.WriteAllLines(resultPath, mas);
+        }
+
+        private string Test(string path)
+        {
+            if (!File.Exists(path))
+                return null;
+
+            var x = new double[_net.GetX];
+            double[] y;
+
+            // Загружаем текущий входной файл
+            string[] currFile = File.ReadAllLines(path);
+
+            for (int i = 0; i < _net.GetX; i++)
+            {
+                x[i] = Convert.ToDouble(currFile[i]);
+            }
+
+            _net.NetOUT(x, out y);
+            var numb = Array.IndexOf(y, y.Max());
+
+            switch (numb)
+            {
+                case 0:
+                    return "0";
+                case 1:
+                    return "1";
+                case 2:
+                    return "2";
+                case 3:
+                    return "3";
+                case 4:
+                    return "4";
+                case 5:
+                    return "5";
+                case 6:
+                    return "6";
+                case 7:
+                    return "7";
+                case 8:
+                    return "8";
+                case 9:
+                    return "9";
+                case 10:
+                    return "a";
+                case 11:
+                    return "b";
+                case 12:
+                    return "c";
+                case 13:
+                    return "d";
+                case 14:
+                    return "e";
+                case 15:
+                    return "f";
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
     }
 }

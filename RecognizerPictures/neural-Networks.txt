@@ -25,3 +25,13 @@ http://kernel-zone.ru/algorithms/svoya-neyronnaya-set-na-c-ischodniki.html
 
 Сборник статей по нейронным сетям:
 http://www.aiportal.ru/articles/neural-networks/1/
+
+Отличная реализация своей сити на c#:
+http://www.c-sharpcorner.com/UploadFile/rmcochran/AI_OOP_NeuralNet06192006090112AM/AI_OOP_NeuralNet.aspx
+
+примеры каптч:
+http://www.navigator61.ru/user/register
+http://birja-mo.ru/script/si/securimage_show.php?0.6290400929924447
+http://www.freelancejob.ru/js/captcha/captcha.php
+http://freelance-tomsk.ru/cms_input/captcha.php?session=178
+https://www.qiwi.ru/register/captcha.action?random=0.058002821041386765
