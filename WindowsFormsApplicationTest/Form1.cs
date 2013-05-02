@@ -41,6 +41,7 @@ namespace WindowsFormsApplicationTest
             String html = intellectBoard22Reg.sendDataWithPost("http://forum.vgd.ru/index.php",
                                                                "denisdenis20000@mail.ru", "denisdenis200000",
                                                                "denisdenis20000", textBox4.Text, sidDdos);
+
             MessageBox.Show(html);
         }
     }
