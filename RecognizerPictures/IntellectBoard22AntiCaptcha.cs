@@ -16,7 +16,7 @@ namespace RecognizerPictures
     /// Класс отвечает за распознание символов "0 1 2 3 4 5 6 7 8 9 a b c d e f" для переданной картинки
     /// Класс работает с картиной, размер которой = 64 на 14
     /// </summary>
-    public class IntellectBoard22AntiCaptcha
+    public class IntellectBoard22AntiCaptcha : IAntiCaptcha
     {
         public Bitmap Image { get; set; }
         public String TextFromImage { get; set; }
@@ -51,7 +51,7 @@ namespace RecognizerPictures
 
         #region Обрезаем белые полосы по краям  изображения
 
-        public Bitmap deleteWhiteStripes(Bitmap image)
+        private Bitmap deleteWhiteStripes(Bitmap image)
         {
             int newWidth = 0;
             int newHeight = 0;
@@ -131,7 +131,7 @@ namespace RecognizerPictures
 
         #region Биномиризация изображения
 
-        public Bitmap binarizationImage(Bitmap image)
+        private Bitmap binarizationImage(Bitmap image)
         {
             Grayscale filterGrayscale = Grayscale.CommonAlgorithms.BT709;
             //Grayscale filterGrayscale = new Grayscale(0.5, 0.419, 0.081); // R-Y
@@ -141,7 +141,7 @@ namespace RecognizerPictures
             return doBlackAndWhiteImage(grayImage);
         }
 
-        public Bitmap doBlackAndWhiteImage(Bitmap image)
+        private Bitmap doBlackAndWhiteImage(Bitmap image)
         {
             Bitmap newImage = new Bitmap(image.Width, image.Height);
             for (int i = 0; i < image.Width; i++)
@@ -166,7 +166,7 @@ namespace RecognizerPictures
 
         #region разрезание капчи на отдельные буквы
 
-        public List<Bitmap> splitImageIntoChars(Bitmap image)
+        private List<Bitmap> splitImageIntoChars(Bitmap image)
         {
             List<Bitmap> chars = new List<Bitmap>(charactersNumber);
             int width = (int) requiredWidth/charactersNumber;
@@ -193,9 +193,10 @@ namespace RecognizerPictures
         }
 
         #endregion
-        
 
-        public static void SaveBin(String path, String name, Bitmap bmp)
+        #region Работа с нейронной сетью
+
+        private static void SaveBin(String path, String name, Bitmap bmp)
         {
             var w = bmp.Width;
             var h = bmp.Height;
@@ -282,5 +283,6 @@ namespace RecognizerPictures
             }
         }
 
+        #endregion
     }
 }

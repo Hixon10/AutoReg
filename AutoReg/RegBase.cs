@@ -19,7 +19,7 @@ namespace AutoReg
             this.antiCaptcha = antiCaptcha;
         }
 
-        public virtual bool reg(String email, String password, String nick)
+        public virtual bool reg(String url, String email, String password, String nick)
         {
             return false;
         }

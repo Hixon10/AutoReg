@@ -51,6 +51,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AutoReg\AutoReg.csproj">
+      <Project>{3DF630B6-4233-4A09-9C6F-AC7F2AFF00F2}</Project>
+      <Name>AutoReg</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RecognizerPictures\RecognizerPictures.csproj">
       <Project>{3E92904E-5F71-4A3B-AD32-EFFAFE478196}</Project>
       <Name>RecognizerPictures</Name>
