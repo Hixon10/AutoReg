@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using ClassLibraryNeuralNetworks;
 
 namespace RecognizerPictures
 {
@@ -10,10 +12,37 @@ namespace RecognizerPictures
     {
         public Bitmap Image { get; set; }
         public String TextFromImage { get; set; }
+        private readonly NeuralNW _net;
 
-        public String recognizeImage(Bitmap image)
+        public IntellectBoard20AntiCaptcha()
         {
-            return String.Empty;
+            _net = new NeuralNW(Directory.GetCurrentDirectory() + "\\..\\..\\..\\RecognizerPictures\\nwFiles\\IntellectBoard20.nw");
+        }
+
+        public String recognizeImage(Bitmap imageSource)
+        {
+            imageSource = MakeBlackAndWhitePicture(imageSource);
+            imageSource = DeleteNoisePixels(imageSource);
+            Bitmap img = DeleteLinesInRow(imageSource);
+            Bitmap[] symbols = CutImageIntoPieces(img);
+
+            string newPath = Path.Combine(Environment.CurrentDirectory, "temp20\\");
+            Directory.CreateDirectory(newPath);
+            StringBuilder result = new StringBuilder();
+            const string nameoffile = "weight";
+
+            for (int i = 0; i < symbols.Length; i++)
+            {
+                symbols[i] = ResizeBitmap(DeleteLinesInColumn(DeleteLinesInRow(symbols[i], 1), 1), 8, 10);
+                symbols[i].Save(newPath + nameoffile + string.Format("{0:00}", i) + ".bmp");
+                SaveBin(newPath, nameoffile + string.Format("{0:00}", i), symbols[i]);
+                result.Append(Recognize(newPath + nameoffile + string.Format("{0:00}", i) + ".in.txt", _net));
+            }
+
+            Directory.Delete(newPath, true);
+
+            return result.ToString();
+
         }
 
         #region Делает изображение чёрно-белым
@@ -251,5 +280,163 @@ namespace RecognizerPictures
 
         #endregion
 
+        #region Изменение размера изображания
+
+        /// <summary>
+        /// Подгоняет изображение под заданный размер обрезанием.
+        /// </summary>
+        /// <param name="sourceBmp">Картинка, которую нужно переделать.</param>
+        /// <param name="width">Нужная ширина</param>
+        /// <param name="height">Нужная высота</param>
+        /// <returns></returns>
+        public static Bitmap ResizeBitmap(Bitmap sourceBmp, int width, int height)
+        {
+            if (sourceBmp.Width != width || sourceBmp.Height != height)
+            {
+                var result = new Bitmap(width, height);
+
+                if (sourceBmp.Width < width && sourceBmp.Height <= height)
+                {
+                    for (int i = 0; i < result.Width; i++)
+                    {
+                        for (int j = 0; j < sourceBmp.Height; j++)
+                        {
+                            result.SetPixel(i, j, sourceBmp.Width > i ? sourceBmp.GetPixel(i, j) : Color.White);
+                        }
+                    }
+                }
+
+                if (sourceBmp.Height < height && sourceBmp.Width <= width)
+                {
+                    for (int i = 0; i < result.Height; i++)
+                    {
+                        for (int j = 0; j < sourceBmp.Width; j++)
+                        {
+                            result.SetPixel(j, i, sourceBmp.Height > i ? sourceBmp.GetPixel(j, i) : Color.White);
+                        }
+                    }
+                }
+
+                if (sourceBmp.Width > width && sourceBmp.Height <= height)
+                {
+                    for (int i = 0; i < result.Width; i++)
+                    {
+                        for (int j = 0; j < sourceBmp.Height; j++)
+                        {
+                            result.SetPixel(i, j, sourceBmp.GetPixel(i, j));
+                        }
+                    }
+                }
+
+                if (sourceBmp.Height > height && sourceBmp.Width <= width)
+                {
+                    for (int i = 1; i < result.Height + 1; i++)
+                    {
+                        for (int j = 0; j < sourceBmp.Width; j++)
+                        {
+                            result.SetPixel(j, i - 1, sourceBmp.GetPixel(j, i));
+
+                        }
+                    }
+                }
+
+                return result;
+            }
+            return sourceBmp;
+        }
+
+        #endregion
+
+        #region Функция для сохранения весов
+
+        /// <summary>
+        /// Сохраняет веса
+        /// </summary>
+        /// <param name="path">Путь к файлу</param>
+        /// <param name="name">Название файла</param>
+        /// <param name="bmp">Картинка, из которой делаются веса</param>
+        public static void SaveBin(String path, String name, Bitmap bmp)
+        {
+
+            var w = bmp.Width;
+            var h = bmp.Height;
+            var n = w * h;
+
+            var mas = new String[n];
+
+            for (int j = 0, k = 0; j < h; j++)
+            {
+                for (int i = 0; i < w; i++)
+                {
+                    var val = 0.3 * bmp.GetPixel(i, j).R + 0.59 * bmp.GetPixel(i, j).G + 0.11 * bmp.GetPixel(i, j).B;
+
+                    if (val > 127)
+                    {
+                        mas[k++] = "-0,5";
+                    }
+                    else
+                    {
+                        mas[k++] = "0,5";
+                    }
+                }
+            }
+
+            File.WriteAllLines(path + "\\" + name + ".in.txt", mas);
+        }
+
+        #endregion
+
+        #region Распознаёт символ
+
+        /// <summary>
+        /// Распознаёт символ с помощью нейронной сети
+        /// </summary>
+        /// <param name="path">Путь до весов сети</param>
+        /// <param name="net">Нейронная сеть</param>
+        /// <returns></returns>
+        public static string Recognize(string path, NeuralNW net)
+        {
+            if (!File.Exists(path))
+                return null;
+
+            var x = new double[net.GetX];
+            double[] y;
+
+            string[] currFile = File.ReadAllLines(path);
+
+            for (int i = 0; i < net.GetX; i++)
+            {
+                x[i] = Convert.ToDouble(currFile[i]);
+            }
+
+            net.NetOUT(x, out y);
+            var numb = Array.IndexOf(y, y.Max());
+
+            switch (numb)
+            {
+                case 0: return "0";
+                case 1: return "1";
+                case 2: return "2";
+                case 3: return "3";
+                case 4: return "4";
+                case 5: return "5";
+                case 6: return "6";
+                case 7: return "7";
+                case 8: return "8";
+                case 9: return "9";
+                case 10: return "a";
+                case 11: return "b";
+                case 12: return "c";
+                case 13: return "d";
+                case 14: return "e";
+                case 15: return "f";
+
+                default:
+                    throw new ArgumentException();
+            }
+
+        }
+
+        #endregion
     }
 }
