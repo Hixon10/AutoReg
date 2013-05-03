@@ -14,107 +14,19 @@ namespace RecognizerPictures
     {
         public Bitmap Image { get; set; }
         public String TextFromImage { get; set; }
+        private NeuralNW _net;
+        private static int _globalNumberSymbolsInImage = 0;
+        private Bitmap _myBitMap;
+        private List<string> _listWithAllShadesGray;
+
+        public phpBBAntiCaptcha()
+        {
+            _net = new NeuralNW(Directory.GetCurrentDirectory() + "\\..\\..\\..\\RecognizerPictures\\nwFiles\\phpbb.nw");
+        }
 
         public String recognizeImage(Bitmap image)
         {
             return String.Empty;
-        }
-
-        private NeuralNW _net;
-        private static int GlobalNumberSymbolsInImage = 0;
-        private Bitmap _myBitMap;
-        private List<string> ListWithAllShadesGray;
-        public string sss = string.Empty;
-
-
-        public static void SaveBin(String path, String name, Bitmap bmp)
-        {
-
-            var w = bmp.Width;
-            var h = bmp.Height;
-            var n = w * h;
-
-            var mas = new String[n];
-
-            for (int j = 0, k = 0; j < h; j++)
-            {
-                for (int i = 0; i < w; i++)
-                {
-                    var val = 0.3 * bmp.GetPixel(i, j).R + 0.59 * bmp.GetPixel(i, j).G + 0.11 * bmp.GetPixel(i, j).B;
-
-                    if (val > 127)
-                    {
-                        mas[k++] = "-0,5";
-                    }
-                    else
-                    {
-                        mas[k++] = "0,5";
-                    }
-                }
-            }
-
-            File.WriteAllLines(path + "\\" + name + ".in.txt", mas);
-        }
-
-        private string Test(string path)
-        {
-            if (!File.Exists(path))
-                return null;
-
-            var x = new double[_net.GetX];
-            double[] y;
-
-            // Загружаем текущий входной файл
-            string[] currFile = File.ReadAllLines(path);
-
-            for (int i = 0; i < _net.GetX; i++)
-            {
-                x[i] = Convert.ToDouble(currFile[i]);
-            }
-
-            _net.NetOUT(x, out y);
-            var numb = Array.IndexOf(y, y.Max());
-            //MessageBox.Show(numb.ToString());
-            //richTextBox2.AppendText(numb.ToString() + "\n");
-            var symbol = new StringBuilder();
-            switch (numb)
-            {
-                case 0: return "1";
-                case 1: return "L";
-                case 2: return "K";
-                case 3: return "M";
-                case 4: return "J";
-                case 5: return "N";
-                case 6: return "I";
-                case 7: return "P";
-                case 8: return "H";
-                case 9: return "Q";
-                case 10: return "G";
-                case 11: return "R";
-                case 12: return "F";
-                case 13: return "S";
-                case 14: return "E";
-                case 15: return "T";
-                case 16: return "D";
-                case 17: return "U";
-                case 18: return "C";
-                case 19: return "V";
-                case 20: return "B";
-                case 21: return "W";
-                case 22: return "A";
-                case 23: return "X";
-                case 24: return "9";
-                case 25: return "Y";
-                case 26: return "8";
-                case 27: return "Z";
-                case 28: return "7";
-                case 29: return "6";
-                case 30: return "5";
-                case 31: return "4";
-                case 32: return "3";
-                case 33: return "2";
-                default: return "ERROR";
-            }
         }
 
         #region Конпка, для проекта, в котором происходит отладка
@@ -123,23 +35,27 @@ namespace RecognizerPictures
         {
             //for (int t = 1; t < 128; t++)
             //{
-            _net = new NeuralNW("111.nw");
-            using (WebClient Client = new WebClient())
+
+            using (var client = new WebClient())
             {
-                Client.DownloadFile("http://localhost/forum/www/ucp.php?mode=confirm&confirm_id=a95b95b4d425f334f1a4e502036ea75c&type=1&sid=4b3e600d9335c450c146aed5bcf622b8", "asde.bmp");
+                client.DownloadFile(
+                    "http://localhost/forum/www/ucp.php?mode=confirm&confirm_id=a95b95b4d425f334f1a4e502036ea75c&type=1&sid=4b3e600d9335c450c146aed5bcf622b8",
+                    "asde.bmp");
             }
 
 
             _myBitMap = new Bitmap("asde.bmp");
+            //_myBitMap = new Bitmap("img121.jpg");
+            //_myBitMap = new Bitmap("img" + t.ToString() + ".jpg");
 
             /*
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox1.ClientSize = new Size(320, 50);
-            pictureBox1.Image = (Image)_myBitMap;
+            pictureBox1.Image = _myBitMap;
             */
-            
-            ListWithAllShadesGray = GetAllShadesGray(_myBitMap); // function
-            var clearEnumerableWithAllShadesGray = ListWithAllShadesGray.Distinct();
+
+            _listWithAllShadesGray = GetAllShadesGray(_myBitMap); // function
+            var clearEnumerableWithAllShadesGray = _listWithAllShadesGray.Distinct();
             var clearListFromEnumerableListWithAllShadesGray = clearEnumerableWithAllShadesGray.ToList();
 
             _myBitMap = Filter(clearListFromEnumerableListWithAllShadesGray, _myBitMap); // function
@@ -147,28 +63,27 @@ namespace RecognizerPictures
             /*
             pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox2.ClientSize = new Size(320, 50);
-            pictureBox2.Image = (Image)_myBitMap;
+            pictureBox2.Image = _myBitMap;
             */
             
             _myBitMap.Save(Environment.CurrentDirectory + @"/ds.jpg");
-
             Bitmap[] test = CutImageIntoPieces(_myBitMap);
 
-            //List<PictureBox> PB = this.Controls.OfType<PictureBox>().ToList();
+            //List<PictureBox> pb = Controls.OfType<PictureBox>().ToList();
 
             int index = 0;
-            int step = GlobalNumberSymbolsInImage;
+            int step = _globalNumberSymbolsInImage;
             Bitmap clearBt;
-            Bitmap cc;
-            for (int i = 0; i < GlobalNumberSymbolsInImage; i++)
+            Bitmap newBitmapForNewImage40Na40;
+            for (int i = 0; i < _globalNumberSymbolsInImage; i++)
             {
 
-                cc = new Bitmap(40, 30);
-                for (int v = 0; v < cc.Width; v++)
+                newBitmapForNewImage40Na40 = new Bitmap(40, 40);
+                for (int v = 0; v < newBitmapForNewImage40Na40.Width; v++)
                 {
-                    for (int g = 0; g < cc.Height; g++)
+                    for (int g = 0; g < newBitmapForNewImage40Na40.Height; g++)
                     {
-                        cc.SetPixel(v, g, Color.White);
+                        newBitmapForNewImage40Na40.SetPixel(v, g, Color.White);
                     }
                 }
                 clearBt = deleteWhiteStripesInHeight(test[index]);
@@ -176,21 +91,61 @@ namespace RecognizerPictures
                 {
                     for (int g = 0; g < clearBt.Height; g++)
                     {
-                        cc.SetPixel(v, g, clearBt.GetPixel(v, g));
+                        newBitmapForNewImage40Na40.SetPixel(v, g, clearBt.GetPixel(v, g));
                     }
                 }
-                //PB[step].ClientSize = new Size(cc.Width, cc.Height);
-                //PB[step].Image = (Image)cc;
-                cc.Save(Environment.CurrentDirectory + @"/rrr" + index.ToString() + ".bmp");
-
-                SaveBin(Environment.CurrentDirectory + "\\temp\\", index.ToString(), cc); // делает файл с весами
-                //richTextBox1.AppendText(Test(Environment.CurrentDirectory + "\\temp\\" + index.ToString() + ".in.txt")); // распознаёт файл с весами
-
+                //pb[step].ClientSize = new Size(newBitmapForNewImage40Na40.Width, newBitmapForNewImage40Na40.Height);
+                //pb[step].Image = newBitmapForNewImage40Na40;
+                var countBlackPixelInOneSmolSquare = new int[4];
+                for (int v = 0; v < clearBt.Width - 1; v++)
+                {
+                    for (int g = 0; g < clearBt.Height - 1; g++)
+                    {
+                        if (newBitmapForNewImage40Na40.GetPixel(v, g).Name == "ff000000")
+                        {
+                            countBlackPixelInOneSmolSquare[0] = 1;
+                        }
+                        else
+                        {
+                            countBlackPixelInOneSmolSquare[0] = 0;
+                        }
+                        if (newBitmapForNewImage40Na40.GetPixel(v + 1, g).Name == "ff000000")
+                        {
+                            countBlackPixelInOneSmolSquare[1] = 1;
+                        }
+                        else
+                        {
+                            countBlackPixelInOneSmolSquare[1] = 0;
+                        }
+                        if (newBitmapForNewImage40Na40.GetPixel(v, g + 1).Name == "ff000000")
+                        {
+                            countBlackPixelInOneSmolSquare[2] = 1;
+                        }
+                        else
+                        {
+                            countBlackPixelInOneSmolSquare[2] = 0;
+                        }
+                        if (newBitmapForNewImage40Na40.GetPixel(v + 1, g + 1).Name == "ff000000")
+                        {
+                            countBlackPixelInOneSmolSquare[3] = 1;
+                        }
+                        else
+                        {
+                            countBlackPixelInOneSmolSquare[3] = 0;
+                        }
+                        if (countBlackPixelInOneSmolSquare.Sum() >= 1)
+                        {
+                            newBitmapForNewImage40Na40.SetPixel(v, g, Color.Black);
+                        }
+                    }
+                }
+                newBitmapForNewImage40Na40.Save(Environment.CurrentDirectory + "\\2progona\\" + index.ToString() + "AAA.bmp");
+                SaveBin(Environment.CurrentDirectory + "\\temp\\", index.ToString(), newBitmapForNewImage40Na40); // делает файл с весами
+                //*****************
+                //richTextBox1.AppendText(GetCharFromImage(Environment.CurrentDirectory + "\\temp\\" + index.ToString() + ".in.txt")); // распознаёт файл с весами
+                //*****************
                 index++;
                 step--;
-
-
-
             }
 
             //------------------------------------------------------------
@@ -208,8 +163,10 @@ namespace RecognizerPictures
 
             //}
             //MessageBox.Show("The end");
-            //sss = richTextBox1.Text.Trim();
-            // Формируем строку с параметрами
+            /*
+             * 
+             * sss = richTextBox1.Text.Trim();
+                // Формируем строку с параметрами
             string secondStepForm = "username=Trishasha" +
                                 "&email=Trisha@gmail.com" +
                                 "&email_confirm=Trisha@gmail.com" +
@@ -219,47 +176,47 @@ namespace RecognizerPictures
             //refresh_vc
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://localhost/forum/www/ucp.php?mode=register");
 
-            // Настраиваем параметры запроса
-            request.UserAgent = "Mozilla/5.0";
-            request.Method = "POST";
+                // Настраиваем параметры запроса
+                request.UserAgent = "Mozilla/5.0";
+                request.Method = "POST";
 
-            // Указываем метод отправки данных скрипту
-            request.AllowAutoRedirect = true;
-            request.Referer = "http://localhost/forum/www/index.php";
-            //request.CookieContainer = cookieCont;
+                // Указываем метод отправки данных скрипту
+                request.AllowAutoRedirect = true;
+                request.Referer = "http://localhost/forum/www/index.php";
+                //request.CookieContainer = cookieCont;
 
-            // Указываем тип отправляемых данных
-            request.ContentType = "application/x-www-form-urlencoded";
+                // Указываем тип отправляемых данных
+                request.ContentType = "application/x-www-form-urlencoded";
 
-            // Преобразуем данные к соответствующую кодировку
-            byte[] EncodedPostParams = Encoding.ASCII.GetBytes(secondStepForm);
-            request.ContentLength = EncodedPostParams.Length;
+                // Преобразуем данные к соответствующую кодировку
+                byte[] EncodedPostParams = Encoding.ASCII.GetBytes(secondStepForm);
+                request.ContentLength = EncodedPostParams.Length;
 
-            // Записываем данные в поток
-            request.GetRequestStream().Write(EncodedPostParams,
-                                             0,
-                                             EncodedPostParams.Length);
+                // Записываем данные в поток
+                request.GetRequestStream().Write(EncodedPostParams,
+                                                 0,
+                                                 EncodedPostParams.Length);
 
-            request.GetRequestStream().Close();
+                request.GetRequestStream().Close();
 
-            // Получаем ответ
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                // Получаем ответ
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
-            // Получаем html-код страницы
-            string html = new StreamReader(response.GetResponseStream(),
-                                           Encoding.UTF8).ReadToEnd();
+                // Получаем html-код страницы
+                string html = new StreamReader(response.GetResponseStream(),
+                                               Encoding.UTF8).ReadToEnd();
 
-            //richTextBox2.AppendText(html);
+                richTextBox2.AppendText(html);
 
-            //Regex re = new Regex("href=\"(.*?)\" id=\"lowres\"");
+                //Regex re = new Regex("href=\"(.*?)\" id=\"lowres\"");
             string strr = "href=\"\\./index.php\\?sid=(.*?)\"";
             Regex re = new Regex(strr);
             Match match = re.Match(html);
             string url = match.Groups[1].Value; // Вот тут url из href
-            //MessageBox.Show(url);
+            MessageBox.Show(url);
 
 
-            string secondStepForm1 = "sid=" + url.Trim() +
+            string secondStepForm1 = "sid=" + url.Trim() + 
                                 "&username=Trishasha" +
                                 "&email=Trisha@gmail.com" +
                                 "&email_confirm=Trisha@gmail.com" +
@@ -300,19 +257,20 @@ namespace RecognizerPictures
                                            Encoding.UTF8).ReadToEnd();
 
 
-            //richTextBox3.AppendText(html1);
+            richTextBox3.AppendText(html1);
 
 
             string strr1 = "src=\"(.*?)\"";
             Regex re1 = new Regex(strr1);
             Match match1 = re.Match(html1);
             string url1 = match1.Groups[1].Value; // Вот тут url из href
-            //MessageBox.Show(url1);
-
+            MessageBox.Show(url1);
+             * 
+             */
+            //}
         }
 
         #endregion
-
 
         #region Убирает лишнее пространство с разрезаных картинок
 
@@ -320,7 +278,7 @@ namespace RecognizerPictures
         {
             int newHeight = 0;
             var yCoordinatesForCopy = new List<int>();
-            int k = 0;
+            int k;
             for (int i = 0; i < image.Height; i++)
             {
                 bool canDeleteRow = true;
@@ -357,13 +315,12 @@ namespace RecognizerPictures
 
         #endregion
 
-
-        #region Вовин метод
+        #region Разрезает капчу на отдельные картинки с цифрами
 
         public static Bitmap[] CutImageIntoPieces(Bitmap image, int numberOfPixelsInColumn = 1,
                                                   int numberOfPixelsInRow = 2, string colorName = "ff000000")
         {
-            int[] distanceBetweenColumn = new int[image.Width];
+            var distanceBetweenColumn = new int[image.Width];
             var numberOfColumnWithBlackPixelsInColumn = 0;
 
             for (int i = 0; i < image.Width; i++)
@@ -384,7 +341,7 @@ namespace RecognizerPictures
             //а в столбце 1 находится координата начала участка
             //т.е. |"ширина" участка|координата начала участка|
 
-            int[,] coodinatesAndWidthOfBlackColumn = new int[11, 2];
+            var coodinatesAndWidthOfBlackColumn = new int[11, 2];
             var numberOfSymbols = 0;
             for (int i = 0; i < numberOfColumnWithBlackPixelsInColumn; i++)
             {
@@ -399,8 +356,8 @@ namespace RecognizerPictures
             }
 
             //moya peremenaya dlya otladki(Artem)
-            GlobalNumberSymbolsInImage = numberOfSymbols;
-            Bitmap[] cuttedImages = new Bitmap[numberOfSymbols];
+            _globalNumberSymbolsInImage = numberOfSymbols;
+            var cuttedImages = new Bitmap[numberOfSymbols];
 
             for (int i = 0; i < numberOfSymbols; i++)
             {
@@ -426,8 +383,6 @@ namespace RecognizerPictures
         }
 
         #endregion
-
-
 
         #region Лист со всеми оттенками серого
 
@@ -457,6 +412,135 @@ namespace RecognizerPictures
 
         #endregion
 
+        #region Преобразует картинку в цифры 0.5 и -0.5, в специальный вид, удобный для сравнения со значением, которое находится в каждом пикселе картинки
+
+        private static void SaveBin(String path, String name, Bitmap bmp)
+        {
+
+            var w = bmp.Width;
+            var h = bmp.Height;
+            var n = w * h;
+
+            var mas = new String[n];
+
+            for (int j = 0, k = 0; j < h; j++)
+            {
+                for (int i = 0; i < w; i++)
+                {
+                    var val = 0.3 * bmp.GetPixel(i, j).R + 0.59 * bmp.GetPixel(i, j).G + 0.11 * bmp.GetPixel(i, j).B;
+
+                    if (val > 127)
+                    {
+                        mas[k++] = "-0,5";
+                    }
+                    else
+                    {
+                        mas[k++] = "0,5";
+                    }
+                }
+            }
+
+            File.WriteAllLines(path + "\\" + name + ".in.txt", mas);
+        }
+
+        #endregion
+
+        #region Возвращает символ с полученной картинки
+
+        private string GetCharFromImage(string path)
+        {
+            if (!File.Exists(path))
+                return null;
+
+            var x = new double[_net.GetX];
+            double[] y;
+
+            string[] currFile = File.ReadAllLines(path);
+
+            for (int i = 0; i < _net.GetX; i++)
+            {
+                x[i] = Convert.ToDouble(currFile[i]);
+            }
+
+            _net.NetOUT(x, out y);
+            var numb = Array.IndexOf(y, y.Max());
+            richTextBox2.AppendText(numb.ToString() + "\n");
+            switch (numb)
+            {
+                case 0:
+                    return "1";
+                case 1:
+                    return "L";
+                case 2:
+                    return "K";
+                case 3:
+                    return "M";
+                case 4:
+                    return "J";
+                case 5:
+                    return "N";
+                case 6:
+                    return "I";
+                case 7:
+                    return "P";
+                case 8:
+                    return "H";
+                case 9:
+                    return "Q";
+                case 10:
+                    return "G";
+                case 11:
+                    return "R";
+                case 12:
+                    return "F";
+                case 13:
+                    return "S";
+                case 14:
+                    return "E";
+                case 15:
+                    return "T";
+                case 16:
+                    return "D";
+                case 17:
+                    return "U";
+                case 18:
+                    return "C";
+                case 19:
+                    return "V";
+                case 20:
+                    return "B";
+                case 21:
+                    return "W";
+                case 22:
+                    return "A";
+                case 23:
+                    return "X";
+                case 24:
+                    return "9";
+                case 25:
+                    return "Y";
+                case 26:
+                    return "8";
+                case 27:
+                    return "Z";
+                case 28:
+                    return "7";
+                case 29:
+                    return "6";
+                case 30:
+                    return "5";
+                case 31:
+                    return "4";
+                case 32:
+                    return "3";
+                case 33:
+                    return "2";
+                default:
+                    return "ERROR";
+            }
+        }
+
+        #endregion
 
         #region Превращает картинку в черно-белую
 
@@ -489,7 +573,6 @@ namespace RecognizerPictures
 
         #endregion
 
-
         #region помогает закрасить картинку в черно-белый цвет
 
         private bool colr(List<string> li, string name)
@@ -519,8 +602,6 @@ namespace RecognizerPictures
         }
 
         #endregion
-
-
 
         #region Тут остатки разного кода, на всякий случай
 
@@ -737,6 +818,5 @@ namespace RecognizerPictures
         }
 
         #endregion
-
     }
 }
