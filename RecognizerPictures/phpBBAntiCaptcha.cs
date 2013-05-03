@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Drawing;
+using System.Text.RegularExpressions;
+using ClassLibraryNeuralNetworks;
 
 namespace RecognizerPictures
 {
@@ -16,23 +20,124 @@ namespace RecognizerPictures
             return String.Empty;
         }
 
+        private NeuralNW _net;
         private static int GlobalNumberSymbolsInImage = 0;
         private Bitmap _myBitMap;
         private List<string> ListWithAllShadesGray;
+        public string sss = string.Empty;
 
+
+        public static void SaveBin(String path, String name, Bitmap bmp)
+        {
+
+            var w = bmp.Width;
+            var h = bmp.Height;
+            var n = w * h;
+
+            var mas = new String[n];
+
+            for (int j = 0, k = 0; j < h; j++)
+            {
+                for (int i = 0; i < w; i++)
+                {
+                    var val = 0.3 * bmp.GetPixel(i, j).R + 0.59 * bmp.GetPixel(i, j).G + 0.11 * bmp.GetPixel(i, j).B;
+
+                    if (val > 127)
+                    {
+                        mas[k++] = "-0,5";
+                    }
+                    else
+                    {
+                        mas[k++] = "0,5";
+                    }
+                }
+            }
+
+            File.WriteAllLines(path + "\\" + name + ".in.txt", mas);
+        }
+
+        private string Test(string path)
+        {
+            if (!File.Exists(path))
+                return null;
+
+            var x = new double[_net.GetX];
+            double[] y;
+
+            // Загружаем текущий входной файл
+            string[] currFile = File.ReadAllLines(path);
+
+            for (int i = 0; i < _net.GetX; i++)
+            {
+                x[i] = Convert.ToDouble(currFile[i]);
+            }
+
+            _net.NetOUT(x, out y);
+            var numb = Array.IndexOf(y, y.Max());
+            //MessageBox.Show(numb.ToString());
+            //richTextBox2.AppendText(numb.ToString() + "\n");
+            var symbol = new StringBuilder();
+            switch (numb)
+            {
+                case 0: return "1";
+                case 1: return "L";
+                case 2: return "K";
+                case 3: return "M";
+                case 4: return "J";
+                case 5: return "N";
+                case 6: return "I";
+                case 7: return "P";
+                case 8: return "H";
+                case 9: return "Q";
+                case 10: return "G";
+                case 11: return "R";
+                case 12: return "F";
+                case 13: return "S";
+                case 14: return "E";
+                case 15: return "T";
+                case 16: return "D";
+                case 17: return "U";
+                case 18: return "C";
+                case 19: return "V";
+                case 20: return "B";
+                case 21: return "W";
+                case 22: return "A";
+                case 23: return "X";
+                case 24: return "9";
+                case 25: return "Y";
+                case 26: return "8";
+                case 27: return "Z";
+                case 28: return "7";
+                case 29: return "6";
+                case 30: return "5";
+                case 31: return "4";
+                case 32: return "3";
+                case 33: return "2";
+                default: return "ERROR";
+            }
+        }
 
         #region Конпка, для проекта, в котором происходит отладка
 
         private void button1_Click(object sender, EventArgs e)
         {
-            _myBitMap = new Bitmap("img121.jpg");
+            //for (int t = 1; t < 128; t++)
+            //{
+            _net = new NeuralNW("111.nw");
+            using (WebClient Client = new WebClient())
+            {
+                Client.DownloadFile("http://localhost/forum/www/ucp.php?mode=confirm&confirm_id=a95b95b4d425f334f1a4e502036ea75c&type=1&sid=4b3e600d9335c450c146aed5bcf622b8", "asde.bmp");
+            }
+
+
+            _myBitMap = new Bitmap("asde.bmp");
 
             /*
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox1.ClientSize = new Size(320, 50);
             pictureBox1.Image = (Image)_myBitMap;
             */
-
+            
             ListWithAllShadesGray = GetAllShadesGray(_myBitMap); // function
             var clearEnumerableWithAllShadesGray = ListWithAllShadesGray.Distinct();
             var clearListFromEnumerableListWithAllShadesGray = clearEnumerableWithAllShadesGray.ToList();
@@ -44,6 +149,7 @@ namespace RecognizerPictures
             pictureBox2.ClientSize = new Size(320, 50);
             pictureBox2.Image = (Image)_myBitMap;
             */
+            
             _myBitMap.Save(Environment.CurrentDirectory + @"/ds.jpg");
 
             Bitmap[] test = CutImageIntoPieces(_myBitMap);
@@ -57,12 +163,12 @@ namespace RecognizerPictures
             for (int i = 0; i < GlobalNumberSymbolsInImage; i++)
             {
 
-                cc = new Bitmap(50, 50);
+                cc = new Bitmap(40, 30);
                 for (int v = 0; v < cc.Width; v++)
                 {
                     for (int g = 0; g < cc.Height; g++)
                     {
-                        cc.SetPixel(v, g, Color.BlueViolet);
+                        cc.SetPixel(v, g, Color.White);
                     }
                 }
                 clearBt = deleteWhiteStripesInHeight(test[index]);
@@ -73,28 +179,135 @@ namespace RecognizerPictures
                         cc.SetPixel(v, g, clearBt.GetPixel(v, g));
                     }
                 }
-
-                //Bitmap s = new Bitmap((Image)clearBt);
-                //Bitmap v = s.Clone(new Rectangle(0, 0, 20, s.Height), s.PixelFormat);
-                //PB[step].SizeMode = PictureBoxSizeMode.StretchImage;
-                //PB[step].ClientSize = new Size(clearBt.Width, clearBt.Height);
-                
                 //PB[step].ClientSize = new Size(cc.Width, cc.Height);
-                
-                //cc = clearBt.Clone(new Rectangle(0, 0, clearBt.Width, clearBt.Height), clearBt.PixelFormat);
-                
                 //PB[step].Image = (Image)cc;
+                cc.Save(Environment.CurrentDirectory + @"/rrr" + index.ToString() + ".bmp");
 
-                //MessageBox.Show(test[index].Width.ToString());
+                SaveBin(Environment.CurrentDirectory + "\\temp\\", index.ToString(), cc); // делает файл с весами
+                //richTextBox1.AppendText(Test(Environment.CurrentDirectory + "\\temp\\" + index.ToString() + ".in.txt")); // распознаёт файл с весами
 
-                cc.Save(Environment.CurrentDirectory + @"/result" + index + ".jpg");
-                //PB[step].ClientSize = new Size(v.Width, v.Height);
-                //PB[step].Image = (Image)v;
-                //MessageBox.Show(test[index].Height.ToString());
-                //v.Save(Environment.CurrentDirectory + @"/result" + index + ".jpg");
                 index++;
                 step--;
+
+
+
             }
+
+            //------------------------------------------------------------
+            //Вызов функций, происходит в цикле:
+            //------------------------------------------------------------
+            //for (int i = 0; i < symbols.Length; i++)
+            //{
+            //  newsymbols[i] = ResizeBitmap(DeleteLinesInColumn(DeleteLinesInRow(symbols[i], 1), 1), 8, 10); //подгоняет под размер
+            //newsymbols[i].Save(Environment.CurrentDirectory + "\\temp\\" + nameoffile + string.Format("{0:00}", i) + ".bmp"); // сохраняет файл  с символов
+
+            //}
+
+
+
+
+            //}
+            //MessageBox.Show("The end");
+            //sss = richTextBox1.Text.Trim();
+            // Формируем строку с параметрами
+            string secondStepForm = "username=Trishasha" +
+                                "&email=Trisha@gmail.com" +
+                                "&email_confirm=Trisha@gmail.com" +
+                                "&new_password=Trishacom" +
+                                "&password_confirm=Trishacom" +
+                                "&confirm_code=" + (sss);
+            //refresh_vc
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://localhost/forum/www/ucp.php?mode=register");
+
+            // Настраиваем параметры запроса
+            request.UserAgent = "Mozilla/5.0";
+            request.Method = "POST";
+
+            // Указываем метод отправки данных скрипту
+            request.AllowAutoRedirect = true;
+            request.Referer = "http://localhost/forum/www/index.php";
+            //request.CookieContainer = cookieCont;
+
+            // Указываем тип отправляемых данных
+            request.ContentType = "application/x-www-form-urlencoded";
+
+            // Преобразуем данные к соответствующую кодировку
+            byte[] EncodedPostParams = Encoding.ASCII.GetBytes(secondStepForm);
+            request.ContentLength = EncodedPostParams.Length;
+
+            // Записываем данные в поток
+            request.GetRequestStream().Write(EncodedPostParams,
+                                             0,
+                                             EncodedPostParams.Length);
+
+            request.GetRequestStream().Close();
+
+            // Получаем ответ
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+            // Получаем html-код страницы
+            string html = new StreamReader(response.GetResponseStream(),
+                                           Encoding.UTF8).ReadToEnd();
+
+            //richTextBox2.AppendText(html);
+
+            //Regex re = new Regex("href=\"(.*?)\" id=\"lowres\"");
+            string strr = "href=\"\\./index.php\\?sid=(.*?)\"";
+            Regex re = new Regex(strr);
+            Match match = re.Match(html);
+            string url = match.Groups[1].Value; // Вот тут url из href
+            //MessageBox.Show(url);
+
+
+            string secondStepForm1 = "sid=" + url.Trim() +
+                                "&username=Trishasha" +
+                                "&email=Trisha@gmail.com" +
+                                "&email_confirm=Trisha@gmail.com" +
+                                "&new_password=Trishacom" +
+                                "&password_confirm=Trishacom" +
+                                "&confirm_code=" + (sss);
+            //refresh_vc
+            HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create("http://localhost/forum/www/ucp.php?mode=register");
+
+            // Настраиваем параметры запроса
+            request1.UserAgent = "Mozilla/5.0";
+            request1.Method = "POST";
+
+            // Указываем метод отправки данных скрипту
+            request1.AllowAutoRedirect = true;
+            request1.Referer = "http://localhost/forum/www/index.php";
+            //request.CookieContainer = cookieCont;
+
+            // Указываем тип отправляемых данных
+            request1.ContentType = "application/x-www-form-urlencoded";
+
+            // Преобразуем данные к соответствующую кодировку
+            byte[] EncodedPostParams1 = Encoding.ASCII.GetBytes(secondStepForm1);
+            request1.ContentLength = EncodedPostParams1.Length;
+
+            // Записываем данные в поток
+            request1.GetRequestStream().Write(EncodedPostParams1,
+                                             0,
+                                             EncodedPostParams1.Length);
+
+            request1.GetRequestStream().Close();
+
+            // Получаем ответ
+            HttpWebResponse response1 = (HttpWebResponse)request1.GetResponse();
+
+            // Получаем html-код страницы
+            string html1 = new StreamReader(response1.GetResponseStream(),
+                                           Encoding.UTF8).ReadToEnd();
+
+
+            //richTextBox3.AppendText(html1);
+
+
+            string strr1 = "src=\"(.*?)\"";
+            Regex re1 = new Regex(strr1);
+            Match match1 = re.Match(html1);
+            string url1 = match1.Groups[1].Value; // Вот тут url из href
+            //MessageBox.Show(url1);
 
         }
 
@@ -126,7 +339,7 @@ namespace RecognizerPictures
                     yCoordinatesForCopy.Add(i);
                 }
             }
-
+            //MessageBox.Show(newHeight.ToString());
             var resultImage = new Bitmap(image.Width, newHeight);
             k = 0;
             foreach (var y in yCoordinatesForCopy)
@@ -213,6 +426,7 @@ namespace RecognizerPictures
         }
 
         #endregion
+
 
 
         #region Лист со всеми оттенками серого
@@ -305,6 +519,7 @@ namespace RecognizerPictures
         }
 
         #endregion
+
 
 
         #region Тут остатки разного кода, на всякий случай
