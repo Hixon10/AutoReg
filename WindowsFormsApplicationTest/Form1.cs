@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -32,11 +33,24 @@ namespace WindowsFormsApplicationTest
 
         private void button2_Click(object sender, EventArgs e)
         {
-//            String html = intellectBoard22Reg.getHtmlFromUrl(domen + "index.php?a=register&m=profile&q=1");
-//            sidDdos = intellectBoard22Reg.getSidDdos(html);
-//            Bitmap image = intellectBoard22Reg.getCaptchaFromSiDdos(domen, sidDdos);
-//            pictureBox1.Image = image;
-//            label5.Text = sidDdos;
+//            IntellectBoard22AntiCaptcha intellectBoard22AntiCaptcha = new IntellectBoard22AntiCaptcha();
+//            Bitmap image = new Bitmap(@"C:\Users\Денис\Desktop\capchta\chars3\0(1).jpg");
+//            intellectBoard22AntiCaptcha.pressImageToFooter(image).Save(@"C:\Users\Денис\Desktop\capchta\chars3\0(2)-2.jpg");
+
+            for (int i = 90; i < 150; i++)
+            {
+                Bitmap image = new Bitmap(@"C:\Users\Денис\Desktop\capchta\" + i.ToString() + ".jpg");
+
+                IntellectBoard22AntiCaptcha intellectBoard22AntiCaptcha = new IntellectBoard22AntiCaptcha();
+                Bitmap imageWithoutWhiteStripes = intellectBoard22AntiCaptcha.deleteWhiteStripes(image);
+                Bitmap blackAndWhiteImage = intellectBoard22AntiCaptcha.binarizationImage(imageWithoutWhiteStripes);
+                List<Bitmap> symbols = intellectBoard22AntiCaptcha.splitImageIntoChars(blackAndWhiteImage);
+
+                for (int j = 0; j < symbols.Count; j++)
+                {
+                    intellectBoard22AntiCaptcha.pressImageToFooter(symbols[j]).Save(@"C:\Users\Денис\Desktop\capchta\chars3\" + i.ToString() + "(" + j.ToString() + ")" + ".jpg");
+                }
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -44,7 +58,7 @@ namespace WindowsFormsApplicationTest
             int succesfulRecognizeCaptcha = 0;
             StringBuilder sb = new StringBuilder();
 
-            for (int i = 0; i < 500; i++)
+            for (int i = 0; i < 200; i++)
             {
 
                 String html = intellectBoard22Reg.getHtmlFromUrl(domen + "index.php?a=register&m=profile&q=1");

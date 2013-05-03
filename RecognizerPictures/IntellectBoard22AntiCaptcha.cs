@@ -27,7 +27,7 @@ namespace RecognizerPictures
 
         public IntellectBoard22AntiCaptcha()
         {
-            _net = new NeuralNW(Directory.GetCurrentDirectory() + "\\..\\..\\..\\RecognizerPictures\\nwFiles\\IntellectBoard22-2.nw");
+            _net = new NeuralNW(Directory.GetCurrentDirectory() + "\\..\\..\\..\\RecognizerPictures\\nwFiles\\IntellectBoard22-4.nw");
         }
         
         public String recognizeImage(Bitmap image)
@@ -49,9 +49,55 @@ namespace RecognizerPictures
             return recognizedImage.ToString();
         }
 
+        public Bitmap pressImageToFooter(Bitmap image)
+        {
+            int shift = 0;
+            bool canShift = true;
+            for (int i = image.Height - 1; i >= 0; i--)
+            {
+                if (!canShift)
+                {
+                    shift--;
+                    break;
+                }
+                for (int j = 0; j < image.Width; j++)
+                {
+                    Color pixel = image.GetPixel(j, i);
+                    if (pixel.R == 0 && pixel.G == 0 && pixel.B == 0)
+                    {
+                        canShift = false;
+                        break;
+                    }
+                }
+                shift++;
+            }
+            
+            Bitmap resultImage = new Bitmap(image.Width, image.Height);
+            int k = image.Height - 1;
+            for (int i = image.Height - 1 - shift; i >= 0; i--)
+            {
+                for (int j = 0; j < image.Width; j++)
+                {
+                    Color pixel = image.GetPixel(j, i);
+                    resultImage.SetPixel(j,k,pixel);
+                }
+                k--;
+            }
+
+            for (int i = 0; i < shift; i++)
+            {
+                for (int j = 0; j < image.Width; j++)
+                {
+                    resultImage.SetPixel(j, i, Color.White);
+                }
+            }
+
+            return resultImage;
+        }
+
         #region Обрезаем белые полосы по краям  изображения
 
-        private Bitmap deleteWhiteStripes(Bitmap image)
+        public Bitmap deleteWhiteStripes(Bitmap image)
         {
             int newWidth = 0;
             int newHeight = 0;
@@ -131,7 +177,7 @@ namespace RecognizerPictures
 
         #region Биномиризация изображения
 
-        private Bitmap binarizationImage(Bitmap image)
+        public Bitmap binarizationImage(Bitmap image)
         {
             Grayscale filterGrayscale = Grayscale.CommonAlgorithms.BT709;
             //Grayscale filterGrayscale = new Grayscale(0.5, 0.419, 0.081); // R-Y
@@ -166,7 +212,7 @@ namespace RecognizerPictures
 
         #region разрезание капчи на отдельные буквы
 
-        private List<Bitmap> splitImageIntoChars(Bitmap image)
+        public List<Bitmap> splitImageIntoChars(Bitmap image)
         {
             List<Bitmap> chars = new List<Bitmap>(charactersNumber);
             int width = (int) requiredWidth/charactersNumber;

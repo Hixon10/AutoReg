@@ -464,7 +464,7 @@ namespace RecognizerPictures
 
             _net.NetOUT(x, out y);
             var numb = Array.IndexOf(y, y.Max());
-            richTextBox2.AppendText(numb.ToString() + "\n");
+            //richTextBox2.AppendText(numb.ToString() + "\n"); //КОММЕНТАРИЙ ДОБАВИЛ ДЕНИС - НЕ НАЙДЕН ЭЛЕМЕНТ richTextBox2
             switch (numb)
             {
                 case 0:
