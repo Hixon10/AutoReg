@@ -23,21 +23,28 @@ namespace AutoReg
 
         public String getHtmlFromUrl(String url)
         {
-//            using (WebClient client = new WebClient()) // WebClient class inherits IDisposable
-//            {
-//                string htmlCode = client.DownloadString(url);
-//                return htmlCode;
-//            }
+            using (WebClient client = new WebClient()) // WebClient class inherits IDisposable
+            {
+                string htmlCode = client.DownloadString(url);
+                return htmlCode;
 
-            HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(url);
-            myRequest.Method = "GET";
-            WebResponse myResponse = myRequest.GetResponse();
-            StreamReader sr = new StreamReader(myResponse.GetResponseStream(), System.Text.Encoding.Default);
-            string result = sr.ReadToEnd();
-            sr.Close();
-            myResponse.Close();
+                Stream data = client.OpenRead(url);
+                StreamReader reader = new StreamReader(data);
+                string s = reader.ReadToEnd();
+                data.Close();
+                reader.Close();
+                return s;
+            }
 
-            return result;
+//            HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(url);
+//            myRequest.Method = "GET";
+//            WebResponse myResponse = myRequest.GetResponse();
+//            StreamReader sr = new StreamReader(myResponse.GetResponseStream(), System.Text.Encoding.Default);
+//            string result = sr.ReadToEnd();
+//            sr.Close();
+//            myResponse.Close();
+//
+//            return result;
         }
 
         public String getSidDdos(String html)
@@ -51,21 +58,22 @@ namespace AutoReg
             return String.Empty;
         }
 
-        public Bitmap getCaptchaFromSiDdos(String sidDdos)
+        public Bitmap getCaptchaFromSiDdos(String domen, String sidDdos)
         {
             string localFilename = Directory.GetCurrentDirectory() + @"\" + sidDdos.GetHashCode() + ".jpg";
             using (WebClient client = new WebClient())
             {
-                client.DownloadFile("http://forum.vgd.ru/agent.php?a=code&amp;sid=" + sidDdos, localFilename);
+                client.DownloadFile(domen + "agent.php?a=code&amp;sid=" + sidDdos, localFilename);
                 Bitmap image = new Bitmap(localFilename);
                 return image;
             }
         }
 
-        public String sendDataWithPost(String url, String email, String password, String nick, String captcha, String siDdos)
+        public String sendDataWithPost(String domen, String email, String password, String nick, String captcha, String siDdos)
         {
             using (var wb = new WebClient())
             {
+                String url = domen + "index.php";
                 var data = new NameValueCollection();
                 data["u__name"] = nick;
                 data["password1"] = password;

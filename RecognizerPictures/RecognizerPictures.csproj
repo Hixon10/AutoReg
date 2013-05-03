@@ -68,6 +68,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="nwFiles\111.nw" />
+    <None Include="nwFiles\IntellectBoard20.nw" />
     <None Include="nwFiles\IntellectBoard22.nw" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

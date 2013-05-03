@@ -13,8 +13,9 @@ namespace WindowsFormsApplicationTest
 {
     public partial class Form1 : Form
     {
-        private IntellectBoard22Reg intellectBoard22Reg;
+        private readonly IntellectBoard22Reg intellectBoard22Reg;
         private String sidDdos;
+        private String domen = "http://forum.vgd.ru/";
         public Form1()
         {
             InitializeComponent();
@@ -30,15 +31,16 @@ namespace WindowsFormsApplicationTest
 
         private void button2_Click(object sender, EventArgs e)
         {
-            String html = intellectBoard22Reg.getHtmlFromUrl(@"http://forum.vgd.ru/index.php?a=register&m=profile&q=1");
+            String html = intellectBoard22Reg.getHtmlFromUrl(domen + "index.php?a=register&m=profile&q=1");
             sidDdos = intellectBoard22Reg.getSidDdos(html);
-            Bitmap image = intellectBoard22Reg.getCaptchaFromSiDdos(sidDdos);
-            this.pictureBox1.Image = image;
+            Bitmap image = intellectBoard22Reg.getCaptchaFromSiDdos(domen, sidDdos);
+            pictureBox1.Image = image;
+            label5.Text = sidDdos;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            String html = intellectBoard22Reg.sendDataWithPost("http://forum.vgd.ru/index.php",
+            String html = intellectBoard22Reg.sendDataWithPost(domen,
                                                                "denisdenis20000@mail.ru", "denisdenis200000",
                                                                "denisdenis20000", textBox4.Text, sidDdos);
 
