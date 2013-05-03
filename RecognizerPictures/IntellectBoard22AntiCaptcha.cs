@@ -27,7 +27,7 @@ namespace RecognizerPictures
 
         public IntellectBoard22AntiCaptcha()
         {
-            _net = new NeuralNW(Directory.GetCurrentDirectory() + "\\..\\..\\..\\RecognizerPictures\\nwFiles\\IntellectBoard22.nw");
+            _net = new NeuralNW(Directory.GetCurrentDirectory() + "\\..\\..\\..\\RecognizerPictures\\nwFiles\\IntellectBoard22-2.nw");
         }
         
         public String recognizeImage(Bitmap image)

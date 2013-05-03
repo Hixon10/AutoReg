@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -31,20 +32,43 @@ namespace WindowsFormsApplicationTest
 
         private void button2_Click(object sender, EventArgs e)
         {
-            String html = intellectBoard22Reg.getHtmlFromUrl(domen + "index.php?a=register&m=profile&q=1");
-            sidDdos = intellectBoard22Reg.getSidDdos(html);
-            Bitmap image = intellectBoard22Reg.getCaptchaFromSiDdos(domen, sidDdos);
-            pictureBox1.Image = image;
-            label5.Text = sidDdos;
+//            String html = intellectBoard22Reg.getHtmlFromUrl(domen + "index.php?a=register&m=profile&q=1");
+//            sidDdos = intellectBoard22Reg.getSidDdos(html);
+//            Bitmap image = intellectBoard22Reg.getCaptchaFromSiDdos(domen, sidDdos);
+//            pictureBox1.Image = image;
+//            label5.Text = sidDdos;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            String html = intellectBoard22Reg.sendDataWithPost(domen,
-                                                               textBox3.Text, textBox2.Text,
-                                                               textBox1.Text, textBox4.Text, sidDdos);
+            int succesfulRecognizeCaptcha = 0;
+            StringBuilder sb = new StringBuilder();
 
-            MessageBox.Show(html);
+            for (int i = 0; i < 500; i++)
+            {
+
+                String html = intellectBoard22Reg.getHtmlFromUrl(domen + "index.php?a=register&m=profile&q=1");
+                sidDdos = intellectBoard22Reg.getSidDdos(html);
+                Bitmap image = intellectBoard22Reg.getCaptchaFromSiDdos(domen, sidDdos);
+                //pictureBox1.Image = image;
+                //label5.Text = sidDdos;
+
+                IAntiCaptcha antiCaptcha = new IntellectBoard22AntiCaptcha();
+                textBox4.Text = antiCaptcha.recognizeImage(image);
+                sb.Append(textBox4.Text);
+                sb.Append("\r\n");
+
+                String response = intellectBoard22Reg.sendDataWithPost(domen,
+                                                                       textBox3.Text, textBox2.Text,
+                                                                       textBox1.Text, textBox4.Text, sidDdos);
+
+                if (intellectBoard22Reg.getStatusRegestration(response) != RegBase.Status.IncorrectCaptcha)
+                {
+                    succesfulRecognizeCaptcha += 1;
+                }
+            }
+            File.WriteAllText(@"C:\Users\Денис\Desktop\capchta\chars\1.txt", sb.ToString());
+            MessageBox.Show(succesfulRecognizeCaptcha.ToString());
         }
     }
 }

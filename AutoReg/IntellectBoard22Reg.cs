@@ -23,7 +23,7 @@ namespace AutoReg
 
         public String getHtmlFromUrl(String url)
         {
-            using (WebClient client = new WebClient()) // WebClient class inherits IDisposable
+            using (WebClient client = new WebClient()) 
             {
                 client.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 6.1; rv:20.0) Gecko/20100101 Firefox/20.0");
                 client.Headers.Add(HttpRequestHeader.Accept, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
@@ -33,6 +33,46 @@ namespace AutoReg
                 string htmlCode = client.DownloadString(url);
                 return htmlCode;
             }
+        }
+
+        public Status getStatusRegestration(String responeHtml)
+        {
+            if (responeHtml.Contains("защитный код"))
+            {
+                return Status.IncorrectCaptcha; 
+            }
+
+            if (responeHtml.Contains("уже существует на"))
+            {
+                return Status.UserAlreadyExists;
+            }
+
+            if (responeHtml.Contains("пароль не совпадает"))
+            {
+                return Status.PasswordsDoNotMatch;
+            }
+
+            if (responeHtml.Contains("Не указан адрес"))
+            {
+                return Status.EmptyEmail;
+            }
+
+            if (responeHtml.Contains("Пароль пользователя не может"))
+            {
+                return  Status.EmptyPasswords;
+            }
+
+            if (responeHtml.Contains("Вы не ввели имя"))
+            {
+                return Status.EmptyLogin;
+            }
+
+            if (responeHtml.Contains("успешно зарегистрирован"))
+            {
+                return Status.SuccessfulRegistration;
+            }
+
+            throw new ArgumentException("Не существует такого статуса регистрации");
         }
 
         public String getSidDdos(String html)
