@@ -10,9 +10,9 @@ namespace AutoReg
     {
         public IntellectBoard20Reg(IAntiCaptcha antiCaptcha) : base(antiCaptcha) { }
 
-        public override bool reg(String url, String email, String password, String nick)
+        public override Status reg(String url, String email, String password, String nick)
         {
-            return false;
+            return Status.IncorrectCaptcha;
         }
     }
 }

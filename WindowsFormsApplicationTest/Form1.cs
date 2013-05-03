@@ -41,8 +41,8 @@ namespace WindowsFormsApplicationTest
         private void button1_Click(object sender, EventArgs e)
         {
             String html = intellectBoard22Reg.sendDataWithPost(domen,
-                                                               "denisdenis20000@mail.ru", "denisdenis200000",
-                                                               "denisdenis20000", textBox4.Text, sidDdos);
+                                                               textBox3.Text, textBox2.Text,
+                                                               textBox1.Text, textBox4.Text, sidDdos);
 
             MessageBox.Show(html);
         }

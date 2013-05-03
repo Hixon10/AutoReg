@@ -16,35 +16,23 @@ namespace AutoReg
     {
         public IntellectBoard22Reg(IAntiCaptcha antiCaptcha) : base(antiCaptcha) { }
 
-        public override bool reg(String url, String email, String password, String nick)
+        public override Status reg(String url, String email, String password, String nick)
         {
-            return false;
+            return Status.IncorrectCaptcha;
         }
 
         public String getHtmlFromUrl(String url)
         {
             using (WebClient client = new WebClient()) // WebClient class inherits IDisposable
             {
+                client.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 6.1; rv:20.0) Gecko/20100101 Firefox/20.0");
+                client.Headers.Add(HttpRequestHeader.Accept, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+                client.Headers.Add(HttpRequestHeader.AcceptLanguage, "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3");
+                client.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate");
+
                 string htmlCode = client.DownloadString(url);
                 return htmlCode;
-
-                Stream data = client.OpenRead(url);
-                StreamReader reader = new StreamReader(data);
-                string s = reader.ReadToEnd();
-                data.Close();
-                reader.Close();
-                return s;
             }
-
-//            HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(url);
-//            myRequest.Method = "GET";
-//            WebResponse myResponse = myRequest.GetResponse();
-//            StreamReader sr = new StreamReader(myResponse.GetResponseStream(), System.Text.Encoding.Default);
-//            string result = sr.ReadToEnd();
-//            sr.Close();
-//            myResponse.Close();
-//
-//            return result;
         }
 
         public String getSidDdos(String html)
@@ -63,7 +51,7 @@ namespace AutoReg
             string localFilename = Directory.GetCurrentDirectory() + @"\" + sidDdos.GetHashCode() + ".jpg";
             using (WebClient client = new WebClient())
             {
-                client.DownloadFile(domen + "agent.php?a=code&amp;sid=" + sidDdos, localFilename);
+                client.DownloadFile(domen + "agent.php?a=code&sid=" + sidDdos, localFilename);
                 Bitmap image = new Bitmap(localFilename);
                 return image;
             }

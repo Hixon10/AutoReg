@@ -12,16 +12,20 @@ namespace AutoReg
         protected String Email { get; set; }
         protected String Password { get; set; }
         protected String Nick { get; set; }
-        protected bool Status { get; set; }
+
+        public enum Status
+        {
+            IncorrectCaptcha, UserAlreadyExists, PasswordsDoNotMatch, EmptyEmail, EmptyPasswords, EmptyLogin, SuccessfulRegistration
+        };
 
         protected RegBase(IAntiCaptcha antiCaptcha)
         {
             this.antiCaptcha = antiCaptcha;
         }
 
-        public virtual bool reg(String url, String email, String password, String nick)
+        public virtual Status reg(String url, String email, String password, String nick)
         {
-            return false;
+            return Status.IncorrectCaptcha;
         }
     }
 }
