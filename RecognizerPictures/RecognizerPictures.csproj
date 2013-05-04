@@ -37,6 +37,10 @@
     <Reference Include="ClassLibraryNeuralNetworks">
       <HintPath>..\libs\ClassLibraryNeuralNetworks.dll</HintPath>
     </Reference>
+    <Reference Include="Fann.Net, Version=1.0.4174.42810, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\Fann.Net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -68,9 +72,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="nwFiles\111.nw" />
     <None Include="nwFiles\IntellectBoard20.nw" />
-    <None Include="nwFiles\IntellectBoard22.nw" />
+    <None Include="nwFiles\IntellectBoard22.ann" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

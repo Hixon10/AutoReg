@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IntellectBoard20Reg.cs" />
-    <Compile Include="IntellectBoard22Reg.cs" />
+    <Compile Include="IntellectBoardReg.cs" />
     <Compile Include="phpBBReg.cs" />
     <Compile Include="RegBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

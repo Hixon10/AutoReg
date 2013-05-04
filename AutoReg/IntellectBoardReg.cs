@@ -12,16 +12,35 @@ using System.Net;
 
 namespace AutoReg
 {
-    public class IntellectBoard22Reg : RegBase
+    public class IntellectBoardReg : RegBase
     {
-        public IntellectBoard22Reg(IAntiCaptcha antiCaptcha) : base(antiCaptcha) { }
+        public IntellectBoardReg(IAntiCaptcha antiCaptcha) : base(antiCaptcha) { }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url">Пример: http://forum.site.ru\/</param>
+        /// <param name="email">Email, на который будет зарегистрирован аккаунт</param>
+        /// <param name="password">Пароль для регистрации</param>
+        /// <param name="nick">Логин, который требуется зарегистрировать</param>
+        /// <returns>Статус регистрации</returns>
         public override Status reg(String url, String email, String password, String nick)
         {
-            return Status.IncorrectCaptcha;
+            Email = email;
+            Password = password;
+            Nick = nick;
+
+            String html = getHtmlFromUrl(url + "index.php?a=register&m=profile&q=1");
+            String sidDdos = getSidDdos(html);
+            Bitmap image = getCaptchaFromSiDdos(url, sidDdos);
+            String captcha = antiCaptcha.recognizeImage(image);
+
+            String response = sendDataWithPost(url, Email, Password, Nick, captcha, sidDdos);
+
+            return getStatusRegestration(response);
         }
 
-        public String getHtmlFromUrl(String url)
+        private String getHtmlFromUrl(String url)
         {
             using (WebClient client = new WebClient()) 
             {
@@ -35,7 +54,7 @@ namespace AutoReg
             }
         }
 
-        public Status getStatusRegestration(String responeHtml)
+        private Status getStatusRegestration(String responeHtml)
         {
             if (responeHtml.Contains("защитный код"))
             {
@@ -75,7 +94,7 @@ namespace AutoReg
             throw new ArgumentException("Не существует такого статуса регистрации");
         }
 
-        public String getSidDdos(String html)
+        private String getSidDdos(String html)
         {
             Match match = Regex.Match(html, @"sid_ddos"" value=""(.+)""><img", RegexOptions.IgnoreCase);
             if (match.Success)
@@ -86,7 +105,7 @@ namespace AutoReg
             return String.Empty;
         }
 
-        public Bitmap getCaptchaFromSiDdos(String domen, String sidDdos)
+        private Bitmap getCaptchaFromSiDdos(String domen, String sidDdos)
         {
             string localFilename = Directory.GetCurrentDirectory() + @"\" + sidDdos.GetHashCode() + ".jpg";
             using (WebClient client = new WebClient())
@@ -97,7 +116,7 @@ namespace AutoReg
             }
         }
 
-        public String sendDataWithPost(String domen, String email, String password, String nick, String captcha, String siDdos)
+        private String sendDataWithPost(String domen, String email, String password, String nick, String captcha, String siDdos)
         {
             using (var wb = new WebClient())
             {

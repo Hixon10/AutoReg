@@ -8,6 +8,7 @@ using System.Text;
 using System.Drawing;
 using AForge.Imaging.Filters;
 using ClassLibraryNeuralNetworks;
+using FANN.Net;
 using RecognizerPictures.Properties;
 
 namespace RecognizerPictures
@@ -23,33 +24,110 @@ namespace RecognizerPictures
         private const int requiredWidth = 64;
         private const int requiredHeight = 14;
         private const int charactersNumber = 8;
-        private NeuralNW _net;
+        private readonly NeuralNet net;
 
         public IntellectBoard22AntiCaptcha()
         {
-            _net = new NeuralNW(Directory.GetCurrentDirectory() + "\\..\\..\\..\\RecognizerPictures\\nwFiles\\IntellectBoard22-4.nw");
+            net = new NeuralNet();
+            net.CreateFromFile(Directory.GetCurrentDirectory() + "\\..\\..\\..\\RecognizerPictures\\nwFiles\\IntellectBoard22.ann");
         }
-        
+
+        #region Распознавание картинки
+
         public String recognizeImage(Bitmap image)
         {
             Bitmap imageWithoutWhiteStripes = deleteWhiteStripes(image);
             Bitmap blackAndWhiteImage = binarizationImage(imageWithoutWhiteStripes);
             List<Bitmap> symbols = splitImageIntoChars(blackAndWhiteImage);
             StringBuilder recognizedImage = new StringBuilder();
-            String path = Environment.CurrentDirectory + "";
-            String fileName = "weight";
 
-            for (int i = 0; i < symbols.Count; i++)
+            foreach (var symbol in symbols)
             {
-                String resultPath = path + fileName + string.Format("{0:00}",i) + ".bmp";
-                symbols[i].Save(resultPath,ImageFormat.Bmp); // сохраняет файл  с символов
-                SaveBin(path, fileName + string.Format("{0:00}", i), symbols[i]); // делает файл с весами
-                recognizedImage.Append(Test(path + "\\" + fileName + string.Format("{0:00}", i) + ".in.txt")); // распознаёт файл с весами
+                Bitmap imagePressedToFooter = pressImageToFooter(symbol);
+                recognizedImage.Append(recognizeSymbol(imagePressedToFooter));
             }
-            return recognizedImage.ToString();
+
+            TextFromImage = recognizedImage.ToString();
+            Image = image;
+
+            return TextFromImage;
         }
 
-        public Bitmap pressImageToFooter(Bitmap image)
+        private String recognizeSymbol(Bitmap chr)
+        {
+            double[] input = new double[chr.Width*chr.Height];
+            int index = 0;
+            for (int y = 0; y < chr.Height; y++)
+            {
+                for (int x = 0; x < chr.Width; x++)
+                {
+                    input[index++] = (chr.GetPixel(x, y) == Color.FromArgb(0, 0, 0)) ? 1 : 0;
+                }
+            }
+
+            //Используем нейронную сеть для распознавания символа
+            double[] result = net.Run(input);
+
+            return getSymbolByWeightArray(result);
+        }
+
+        private String getSymbolByWeightArray(double[] result)
+        {
+            double max = result[0];
+            int max_num = 0;
+            for (int i = 0; i < result.Length; i++)
+            {
+                if (result[i] > max)
+                {
+                    max_num = i;
+                    max = result[i];
+                }
+            }
+
+            switch (max_num)
+            {
+                case 0:
+                    return "0";
+                case 1:
+                    return "1";
+                case 2:
+                    return "2";
+                case 3:
+                    return "3";
+                case 4:
+                    return "4";
+                case 5:
+                    return "5";
+                case 6:
+                    return "6";
+                case 7:
+                    return "7";
+                case 8:
+                    return "8";
+                case 9:
+                    return "9";
+                case 10:
+                    return "a";
+                case 11:
+                    return "b";
+                case 12:
+                    return "c";
+                case 13:
+                    return "d";
+                case 14:
+                    return "e";
+                case 15:
+                    return "f";
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
+        #endregion
+
+        #region Прижатие картинки к низу
+
+        private Bitmap pressImageToFooter(Bitmap image)
         {
             int shift = 0;
             bool canShift = true;
@@ -71,7 +149,7 @@ namespace RecognizerPictures
                 }
                 shift++;
             }
-            
+
             Bitmap resultImage = new Bitmap(image.Width, image.Height);
             int k = image.Height - 1;
             for (int i = image.Height - 1 - shift; i >= 0; i--)
@@ -79,7 +157,7 @@ namespace RecognizerPictures
                 for (int j = 0; j < image.Width; j++)
                 {
                     Color pixel = image.GetPixel(j, i);
-                    resultImage.SetPixel(j,k,pixel);
+                    resultImage.SetPixel(j, k, pixel);
                 }
                 k--;
             }
@@ -95,9 +173,11 @@ namespace RecognizerPictures
             return resultImage;
         }
 
+        #endregion
+
         #region Обрезаем белые полосы по краям  изображения
 
-        public Bitmap deleteWhiteStripes(Bitmap image)
+        private Bitmap deleteWhiteStripes(Bitmap image)
         {
             int newWidth = 0;
             int newHeight = 0;
@@ -177,7 +257,7 @@ namespace RecognizerPictures
 
         #region Биномиризация изображения
 
-        public Bitmap binarizationImage(Bitmap image)
+        private Bitmap binarizationImage(Bitmap image)
         {
             Grayscale filterGrayscale = Grayscale.CommonAlgorithms.BT709;
             //Grayscale filterGrayscale = new Grayscale(0.5, 0.419, 0.081); // R-Y
@@ -212,7 +292,7 @@ namespace RecognizerPictures
 
         #region разрезание капчи на отдельные буквы
 
-        public List<Bitmap> splitImageIntoChars(Bitmap image)
+        private List<Bitmap> splitImageIntoChars(Bitmap image)
         {
             List<Bitmap> chars = new List<Bitmap>(charactersNumber);
             int width = (int) requiredWidth/charactersNumber;
@@ -236,97 +316,6 @@ namespace RecognizerPictures
             }
 
             return chars;
-        }
-
-        #endregion
-
-        #region Работа с нейронной сетью
-
-        private static void SaveBin(String path, String name, Bitmap bmp)
-        {
-            var w = bmp.Width;
-            var h = bmp.Height;
-            var n = w*h;
-
-            var mas = new String[n];
-
-            for (int j = 0, k = 0; j < h; j++)
-            {
-                for (int i = 0; i < w; i++)
-                {
-                    var val = 0.3*bmp.GetPixel(i, j).R + 0.59*bmp.GetPixel(i, j).G + 0.11*bmp.GetPixel(i, j).B;
-
-                    if (val > 127)
-                    {
-                        mas[k++] = "-0,5";
-                    }
-                    else
-                    {
-                        mas[k++] = "0,5";
-                    }
-                }
-            }
-
-            String resultPath = path + "\\" + name + ".in.txt";
-            File.WriteAllLines(resultPath, mas);
-        }
-
-        private string Test(string path)
-        {
-            if (!File.Exists(path))
-                return null;
-
-            var x = new double[_net.GetX];
-            double[] y;
-
-            // Загружаем текущий входной файл
-            string[] currFile = File.ReadAllLines(path);
-
-            for (int i = 0; i < _net.GetX; i++)
-            {
-                x[i] = Convert.ToDouble(currFile[i]);
-            }
-
-            _net.NetOUT(x, out y);
-            var numb = Array.IndexOf(y, y.Max());
-
-            switch (numb)
-            {
-                case 0:
-                    return "0";
-                case 1:
-                    return "1";
-                case 2:
-                    return "2";
-                case 3:
-                    return "3";
-                case 4:
-                    return "4";
-                case 5:
-                    return "5";
-                case 6:
-                    return "6";
-                case 7:
-                    return "7";
-                case 8:
-                    return "8";
-                case 9:
-                    return "9";
-                case 10:
-                    return "a";
-                case 11:
-                    return "b";
-                case 12:
-                    return "c";
-                case 13:
-                    return "d";
-                case 14:
-                    return "e";
-                case 15:
-                    return "f";
-                default:
-                    throw new ArgumentException();
-            }
         }
 
         #endregion
