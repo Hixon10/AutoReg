@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,9 +20,9 @@ namespace RecognizerPictures
 
         public String recognizeImage(Bitmap imageSource)
         {
-            imageSource = MakeBlackAndWhitePicture(imageSource);
-            imageSource = DeleteNoisePixels(imageSource);
-            Bitmap img = DeleteLinesInRow(imageSource);
+            Bitmap blackAndWhiteimage = MakeBlackAndWhitePicture(imageSource);
+            Bitmap withoutnoiseimage = DeleteNoisePixels(blackAndWhiteimage);
+            Bitmap img = DeleteLinesInRow(withoutnoiseimage);
             Bitmap[] symbols = CutImageIntoPieces(img);
 
             string newPath = Path.Combine(Environment.CurrentDirectory, "temp20\\");
@@ -48,24 +47,24 @@ namespace RecognizerPictures
         #region Делает изображение чёрно-белым
 
         /// <summary>
-        /// Делает изображение чёрно-белым, ориентируясь на "небелые" пиксели
+        /// Делает изображение чёрно-белым, ориентируясь на "небелые" пиксели.
         /// </summary>
         /// <param name="img">Изображение</param>
-        /// <returns></returns>
+        /// <returns>Чёрно-белое изображение</returns>
         public static Bitmap MakeBlackAndWhitePicture(Bitmap img)
         {
+            Bitmap newImg = new Bitmap(img.Width, img.Height);
             for (int i = 0; i < img.Width; i++)
             {
                 for (int j = 0; j < img.Height; j++)
                 {
                     Color cl = img.GetPixel(i, j);
 
-                    if (cl.Name != "ffffffff")
-                        img.SetPixel(i, j, Color.Black);
+                    newImg.SetPixel(i, j, cl.Name != "ffffffff" ? Color.Black : Color.White);
                 }
             }
 
-            return img;
+            return newImg;
         }
 
         #endregion
@@ -77,7 +76,7 @@ namespace RecognizerPictures
         /// </summary>
         /// <param name="image">Изображение</param>
         /// <param name="pixelAround">Количество пикселей вокруг</param>
-        /// <returns></returns>
+        /// <returns>Изображение без пискельного шума</returns>
         public static Bitmap DeleteNoisePixels(Bitmap image, int pixelAround = 2)
         {
 
@@ -121,7 +120,7 @@ namespace RecognizerPictures
         /// <param name="image">Изображение</param>
         /// <param name="numberOfPixelsInRow">Количество пикселей в ряду</param>
         /// <param name="colorName">Цвет, на который следует ориентироваться при удалении</param>
-        /// <returns></returns>
+        /// <returns>Изображение без пустых рядов</returns>
         public static Bitmap DeleteLinesInRow(Bitmap image, int numberOfPixelsInRow = 3, string colorName = "ff000000")
         {
             var resultImg = new Bitmap(image.Width, image.Height);
@@ -143,7 +142,7 @@ namespace RecognizerPictures
                 }
             }
 
-            resultImg = cropImage(resultImg, new Rectangle(0, 0, resultImg.Width, newHeight));
+            resultImg = CropImage(resultImg, new Rectangle(0, 0, resultImg.Width, newHeight));
 
             return resultImg;
         }
@@ -157,8 +156,8 @@ namespace RecognizerPictures
         /// </summary>
         /// <param name="img">Изображение</param>
         /// <param name="cropArea">Квадрат для обрезания</param>
-        /// <returns></returns>
-        public static Bitmap cropImage(Image img, Rectangle cropArea)
+        /// <returns>Обрезанное изображение</returns>
+        public static Bitmap CropImage(Image img, Rectangle cropArea)
         {
             Bitmap bmpImage = new Bitmap(img);
             Bitmap bmpCrop = bmpImage.Clone(cropArea, bmpImage.PixelFormat);
@@ -175,7 +174,7 @@ namespace RecognizerPictures
         /// <param name="image">Изображение</param>
         /// <param name="numberOfPixelsInColumn">Количество пикселей в столбце</param>
         /// <param name="colorName">Цвет, на который следует ориентироваться при удалении</param>
-        /// <returns></returns>
+        /// <returns>Изображение без пустых столбцёв</returns>
         public static Bitmap DeleteLinesInColumn(Bitmap image, int numberOfPixelsInColumn = 2,
                                                  string colorName = "ff000000")
         {
@@ -199,7 +198,7 @@ namespace RecognizerPictures
                 }
             }
 
-            resultImage = cropImage(resultImage, new Rectangle(0, 0, newWidth, resultImage.Height));
+            resultImage = CropImage(resultImage, new Rectangle(0, 0, newWidth, resultImage.Height));
             return resultImage;
         }
 
@@ -214,7 +213,7 @@ namespace RecognizerPictures
         /// <param name="numberOfPixelsInColumn">Количество пикселей в столбце, которое учитывает столбец, как подходящий</param>
         /// <param name="numberOfPixelsInRow">Количество пикселей, в которых располагается символ</param>
         /// <param name="colorName">Цвет, которым написаны символы</param>
-        /// <returns></returns>
+        /// <returns>Массив изображений, содержащий все символы</returns>
         public static Bitmap[] CutImageIntoPieces(Bitmap image, int numberOfPixelsInColumn = 1,
                                                   int numberOfPixelsInRow = 2, string colorName = "ff000000")
         {
@@ -288,7 +287,7 @@ namespace RecognizerPictures
         /// <param name="sourceBmp">Картинка, которую нужно переделать.</param>
         /// <param name="width">Нужная ширина</param>
         /// <param name="height">Нужная высота</param>
-        /// <returns></returns>
+        /// <returns>Изображение нужного размера</returns>
         public static Bitmap ResizeBitmap(Bitmap sourceBmp, int width, int height)
         {
             if (sourceBmp.Width != width || sourceBmp.Height != height)
@@ -393,7 +392,7 @@ namespace RecognizerPictures
         /// </summary>
         /// <param name="path">Путь до весов сети</param>
         /// <param name="net">Нейронная сеть</param>
-        /// <returns></returns>
+        /// <returns>Рагзаданные символы</returns>
         public static string Recognize(string path, NeuralNW net)
         {
             if (!File.Exists(path))
