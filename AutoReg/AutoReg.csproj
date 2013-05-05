@@ -41,7 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IntellectBoard20Reg.cs" />
     <Compile Include="IntellectBoardReg.cs" />
     <Compile Include="phpBBReg.cs" />
     <Compile Include="RegBase.cs" />
