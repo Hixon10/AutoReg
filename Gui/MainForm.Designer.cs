@@ -47,6 +47,15 @@
             this.start = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
             this.textBoxNumberAcc = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.textBoxUrlIB22 = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.textBoxUrlPhpBB = new System.Windows.Forms.TextBox();
+            this.textBoxUrlIB20 = new System.Windows.Forms.TextBox();
+            this.labelMaxPossilbeRegistrationIB22 = new System.Windows.Forms.Label();
+            this.labelMaxPossilbeRegistrationPhpBB = new System.Windows.Forms.Label();
+            this.labelMaxPossilbeRegistrationIB20 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // textBoxNickList
@@ -141,16 +150,16 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(22, 196);
+            this.label5.Location = new System.Drawing.Point(14, 274);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(233, 13);
+            this.label5.Size = new System.Drawing.Size(160, 13);
             this.label5.TabIndex = 9;
-            this.label5.Text = "Статистика зарегистрированных аккаунтов:";
+            this.label5.Text = "Статистика разгаданных капч";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(22, 219);
+            this.label6.Location = new System.Drawing.Point(14, 297);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(39, 13);
             this.label6.TabIndex = 10;
@@ -159,16 +168,16 @@
             // labelphpBBStat
             // 
             this.labelphpBBStat.AutoSize = true;
-            this.labelphpBBStat.Location = new System.Drawing.Point(67, 219);
+            this.labelphpBBStat.Location = new System.Drawing.Point(125, 297);
             this.labelphpBBStat.Name = "labelphpBBStat";
-            this.labelphpBBStat.Size = new System.Drawing.Size(42, 13);
+            this.labelphpBBStat.Size = new System.Drawing.Size(13, 13);
             this.labelphpBBStat.TabIndex = 11;
-            this.labelphpBBStat.Text = "15/175";
+            this.labelphpBBStat.Text = "0";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(21, 246);
+            this.label8.Location = new System.Drawing.Point(13, 324);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(96, 13);
             this.label8.TabIndex = 12;
@@ -177,7 +186,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(22, 270);
+            this.label9.Location = new System.Drawing.Point(14, 348);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(96, 13);
             this.label9.TabIndex = 13;
@@ -186,24 +195,24 @@
             // labelIntellectBoard22Stat
             // 
             this.labelIntellectBoard22Stat.AutoSize = true;
-            this.labelIntellectBoard22Stat.Location = new System.Drawing.Point(124, 270);
+            this.labelIntellectBoard22Stat.Location = new System.Drawing.Point(125, 348);
             this.labelIntellectBoard22Stat.Name = "labelIntellectBoard22Stat";
-            this.labelIntellectBoard22Stat.Size = new System.Drawing.Size(42, 13);
+            this.labelIntellectBoard22Stat.Size = new System.Drawing.Size(13, 13);
             this.labelIntellectBoard22Stat.TabIndex = 14;
-            this.labelIntellectBoard22Stat.Text = "18/175";
+            this.labelIntellectBoard22Stat.Text = "0";
             // 
             // labelIntellectBoard20Stat
             // 
             this.labelIntellectBoard20Stat.AutoSize = true;
-            this.labelIntellectBoard20Stat.Location = new System.Drawing.Point(123, 246);
+            this.labelIntellectBoard20Stat.Location = new System.Drawing.Point(125, 324);
             this.labelIntellectBoard20Stat.Name = "labelIntellectBoard20Stat";
-            this.labelIntellectBoard20Stat.Size = new System.Drawing.Size(42, 13);
+            this.labelIntellectBoard20Stat.Size = new System.Drawing.Size(13, 13);
             this.labelIntellectBoard20Stat.TabIndex = 15;
-            this.labelIntellectBoard20Stat.Text = "25/175";
+            this.labelIntellectBoard20Stat.Text = "0";
             // 
             // start
             // 
-            this.start.Location = new System.Drawing.Point(15, 144);
+            this.start.Location = new System.Drawing.Point(17, 233);
             this.start.Name = "start";
             this.start.Size = new System.Drawing.Size(149, 23);
             this.start.TabIndex = 16;
@@ -226,13 +235,97 @@
             this.textBoxNumberAcc.Name = "textBoxNumberAcc";
             this.textBoxNumberAcc.Size = new System.Drawing.Size(128, 20);
             this.textBoxNumberAcc.TabIndex = 18;
-            this.textBoxNumberAcc.Text = "175";
+            this.textBoxNumberAcc.Text = "0";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(13, 149);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(54, 13);
+            this.label7.TabIndex = 19;
+            this.label7.Text = "URL IB22";
+            // 
+            // textBoxUrlIB22
+            // 
+            this.textBoxUrlIB22.Location = new System.Drawing.Point(217, 142);
+            this.textBoxUrlIB22.Name = "textBoxUrlIB22";
+            this.textBoxUrlIB22.Size = new System.Drawing.Size(128, 20);
+            this.textBoxUrlIB22.TabIndex = 20;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(14, 178);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(54, 13);
+            this.label10.TabIndex = 21;
+            this.label10.Text = "URL IB20";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(14, 204);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(64, 13);
+            this.label11.TabIndex = 22;
+            this.label11.Text = "URL phpBB";
+            // 
+            // textBoxUrlPhpBB
+            // 
+            this.textBoxUrlPhpBB.Location = new System.Drawing.Point(217, 197);
+            this.textBoxUrlPhpBB.Name = "textBoxUrlPhpBB";
+            this.textBoxUrlPhpBB.Size = new System.Drawing.Size(128, 20);
+            this.textBoxUrlPhpBB.TabIndex = 23;
+            // 
+            // textBoxUrlIB20
+            // 
+            this.textBoxUrlIB20.Location = new System.Drawing.Point(217, 171);
+            this.textBoxUrlIB20.Name = "textBoxUrlIB20";
+            this.textBoxUrlIB20.Size = new System.Drawing.Size(128, 20);
+            this.textBoxUrlIB20.TabIndex = 24;
+            // 
+            // labelMaxPossilbeRegistrationIB22
+            // 
+            this.labelMaxPossilbeRegistrationIB22.AutoSize = true;
+            this.labelMaxPossilbeRegistrationIB22.Location = new System.Drawing.Point(139, 348);
+            this.labelMaxPossilbeRegistrationIB22.Name = "labelMaxPossilbeRegistrationIB22";
+            this.labelMaxPossilbeRegistrationIB22.Size = new System.Drawing.Size(18, 13);
+            this.labelMaxPossilbeRegistrationIB22.TabIndex = 25;
+            this.labelMaxPossilbeRegistrationIB22.Text = "/0";
+            // 
+            // labelMaxPossilbeRegistrationPhpBB
+            // 
+            this.labelMaxPossilbeRegistrationPhpBB.AutoSize = true;
+            this.labelMaxPossilbeRegistrationPhpBB.Location = new System.Drawing.Point(139, 297);
+            this.labelMaxPossilbeRegistrationPhpBB.Name = "labelMaxPossilbeRegistrationPhpBB";
+            this.labelMaxPossilbeRegistrationPhpBB.Size = new System.Drawing.Size(18, 13);
+            this.labelMaxPossilbeRegistrationPhpBB.TabIndex = 26;
+            this.labelMaxPossilbeRegistrationPhpBB.Text = "/0";
+            // 
+            // labelMaxPossilbeRegistrationIB20
+            // 
+            this.labelMaxPossilbeRegistrationIB20.AutoSize = true;
+            this.labelMaxPossilbeRegistrationIB20.Location = new System.Drawing.Point(139, 324);
+            this.labelMaxPossilbeRegistrationIB20.Name = "labelMaxPossilbeRegistrationIB20";
+            this.labelMaxPossilbeRegistrationIB20.Size = new System.Drawing.Size(18, 13);
+            this.labelMaxPossilbeRegistrationIB20.TabIndex = 27;
+            this.labelMaxPossilbeRegistrationIB20.Text = "/0";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(352, 320);
+            this.ClientSize = new System.Drawing.Size(548, 377);
+            this.Controls.Add(this.labelMaxPossilbeRegistrationIB20);
+            this.Controls.Add(this.labelMaxPossilbeRegistrationPhpBB);
+            this.Controls.Add(this.labelMaxPossilbeRegistrationIB22);
+            this.Controls.Add(this.textBoxUrlIB20);
+            this.Controls.Add(this.textBoxUrlPhpBB);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.textBoxUrlIB22);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.textBoxNumberAcc);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.start);
@@ -280,6 +373,15 @@
         private System.Windows.Forms.Button start;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TextBox textBoxNumberAcc;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox textBoxUrlIB22;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox textBoxUrlPhpBB;
+        private System.Windows.Forms.TextBox textBoxUrlIB20;
+        private System.Windows.Forms.Label labelMaxPossilbeRegistrationIB22;
+        private System.Windows.Forms.Label labelMaxPossilbeRegistrationPhpBB;
+        private System.Windows.Forms.Label labelMaxPossilbeRegistrationIB20;
     }
 }
 
