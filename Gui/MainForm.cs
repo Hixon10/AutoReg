@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -31,6 +32,7 @@ namespace Gui
         public MainForm()
         {
             InitializeComponent();
+            backgroundWorkerIB22.WorkerReportsProgress = true;
             _intellectBoard22AntiCaptcha = new IntellectBoard22AntiCaptcha();
             _intellectBoard20AntiCaptcha = new IntellectBoard20AntiCaptcha();
             _phpBBAntiCaptcha = new phpBBAntiCaptcha();
@@ -53,19 +55,17 @@ namespace Gui
                 labelIntellectBoard22Stat.Text = "0";
                 this.Refresh();
 
+                if (checkBoxUrlIB22.Checked)
+                {
+                    if (backgroundWorkerIB22.IsBusy != true)
+                    {
+                        // Start the asynchronous operation.
+                        backgroundWorkerIB22.RunWorkerAsync();
+                    }
+                }
+
                 for (int i = 0; i < _possiblenumberAcc; i++)
                 {
-                    if (checkBoxUrlIB22.Checked)
-                    {
-                        //Важно, используются левые данные для регистрации, для того чтобы не проходила регистрация
-                        if (_intellectBoard22Reg.reg(_urlIntellectBoard22Forum, _emails[0], _passwords[0], _nicks[0]) !=
-                            RegBase.Status.IncorrectCaptcha)
-                        {
-                            int digit = int.Parse(labelIntellectBoard22Stat.Text);
-                            labelIntellectBoard22Stat.Text = (digit + 1).ToString();
-                        }
-                    }
-
                     if (checkBoxUrlIB20.Checked)
                     {
                         //Важно, используются левые данные для регистрации, для того чтобы не проходила регистрация
@@ -75,6 +75,11 @@ namespace Gui
                             int digit = int.Parse(labelIntellectBoard20Stat.Text);
                             labelIntellectBoard20Stat.Text = (digit + 1).ToString();
                         }
+                    }
+
+                    if (checkBoxUrlphpBB.Checked)
+                    {
+                        
                     }
 
                     this.Refresh();
@@ -173,6 +178,33 @@ namespace Gui
                 }
             }
             return list;
+        }
+
+        private void backgroundWorkerIB22_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+            int progress = 0;
+
+            for (int i = 0; i < _possiblenumberAcc; i++)
+            {
+                //Важно, используются левые данные для регистрации, для того чтобы не проходила регистрация
+                if (_intellectBoard22Reg.reg(_urlIntellectBoard22Forum, _emails[0], _passwords[0], _nicks[0]) !=
+                    RegBase.Status.IncorrectCaptcha)
+                {
+                    progress++;
+                    worker.ReportProgress(progress);
+                }
+            }
+        }
+
+        private void backgroundWorkerIB22_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
+        {
+            labelIntellectBoard22Stat.Text = e.ProgressPercentage.ToString();
+        }
+
+        private void backgroundWorkerIB22_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            MessageBox.Show("Регистрация на форуме IntellectBoard22 завершена!");
         }
     }
 }

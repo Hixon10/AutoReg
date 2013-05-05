@@ -59,6 +59,7 @@
             this.checkBoxUrlIB22 = new System.Windows.Forms.CheckBox();
             this.checkBoxUrlIB20 = new System.Windows.Forms.CheckBox();
             this.checkBoxUrlphpBB = new System.Windows.Forms.CheckBox();
+            this.backgroundWorkerIB22 = new System.ComponentModel.BackgroundWorker();
             this.SuspendLayout();
             // 
             // textBoxNickList
@@ -345,6 +346,12 @@
             this.checkBoxUrlphpBB.Text = "Регистрировать";
             this.checkBoxUrlphpBB.UseVisualStyleBackColor = true;
             // 
+            // backgroundWorkerIB22
+            // 
+            this.backgroundWorkerIB22.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerIB22_DoWork);
+            this.backgroundWorkerIB22.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerIB22_ProgressChanged);
+            this.backgroundWorkerIB22.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerIB22_RunWorkerCompleted);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -421,6 +428,7 @@
         private System.Windows.Forms.CheckBox checkBoxUrlIB22;
         private System.Windows.Forms.CheckBox checkBoxUrlIB20;
         private System.Windows.Forms.CheckBox checkBoxUrlphpBB;
+        private System.ComponentModel.BackgroundWorker backgroundWorkerIB22;
     }
 }
 
