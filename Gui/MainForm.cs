@@ -55,20 +55,26 @@ namespace Gui
 
                 for (int i = 0; i < _possiblenumberAcc; i++)
                 {
-                    //Важно, используются левые данные для регистрации, для того чтобы не проходила регистрация
-                    if (_intellectBoard22Reg.reg(_urlIntellectBoard22Forum, _emails[0], _passwords[0], _nicks[0]) !=
-                        RegBase.Status.IncorrectCaptcha)
+                    if (checkBoxUrlIB22.Checked)
                     {
-                        int digit = int.Parse(labelIntellectBoard22Stat.Text);
-                        labelIntellectBoard22Stat.Text = (digit + 1).ToString();
+                        //Важно, используются левые данные для регистрации, для того чтобы не проходила регистрация
+                        if (_intellectBoard22Reg.reg(_urlIntellectBoard22Forum, _emails[0], _passwords[0], _nicks[0]) !=
+                            RegBase.Status.IncorrectCaptcha)
+                        {
+                            int digit = int.Parse(labelIntellectBoard22Stat.Text);
+                            labelIntellectBoard22Stat.Text = (digit + 1).ToString();
+                        }
                     }
 
-                    //Важно, используются левые данные для регистрации, для того чтобы не проходила регистрация
-                    if (_intellectBoard20Reg.reg(_urlIntellectBoard20Forum, _emails[0], _passwords[0], _nicks[0]) !=
-                        RegBase.Status.IncorrectCaptcha)
+                    if (checkBoxUrlIB20.Checked)
                     {
-                        int digit = int.Parse(labelIntellectBoard20Stat.Text);
-                        labelIntellectBoard20Stat.Text = (digit + 1).ToString();
+                        //Важно, используются левые данные для регистрации, для того чтобы не проходила регистрация
+                        if (_intellectBoard20Reg.reg(_urlIntellectBoard20Forum, _emails[0], _passwords[0], _nicks[0]) !=
+                            RegBase.Status.IncorrectCaptcha)
+                        {
+                            int digit = int.Parse(labelIntellectBoard20Stat.Text);
+                            labelIntellectBoard20Stat.Text = (digit + 1).ToString();
+                        }
                     }
 
                     this.Refresh();
@@ -104,13 +110,13 @@ namespace Gui
             if (_emails.Count == 0) return false;
             if (_numberAcc == 0) return false;
 
-            if (String.IsNullOrWhiteSpace(textBoxUrlIB22.Text)) return false;
+            if (String.IsNullOrWhiteSpace(textBoxUrlIB22.Text) && checkBoxUrlIB22.Checked) return false;
             _urlIntellectBoard22Forum = textBoxUrlIB22.Text;
 
-            if (String.IsNullOrWhiteSpace(textBoxUrlIB20.Text)) return false;
+            if (String.IsNullOrWhiteSpace(textBoxUrlIB20.Text) && checkBoxUrlIB20.Checked) return false;
             _urlIntellectBoard20Forum = textBoxUrlIB20.Text;
 
-            if (String.IsNullOrWhiteSpace(textBoxUrlPhpBB.Text)) return false;
+            if (String.IsNullOrWhiteSpace(textBoxUrlPhpBB.Text) && checkBoxUrlphpBB.Checked) return false;
             _urlphpBBForum = textBoxUrlPhpBB.Text;
 
             return true;
