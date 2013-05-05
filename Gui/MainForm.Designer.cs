@@ -56,6 +56,9 @@
             this.labelMaxPossilbeRegistrationIB22 = new System.Windows.Forms.Label();
             this.labelMaxPossilbeRegistrationPhpBB = new System.Windows.Forms.Label();
             this.labelMaxPossilbeRegistrationIB20 = new System.Windows.Forms.Label();
+            this.checkBoxUrlIB22 = new System.Windows.Forms.CheckBox();
+            this.checkBoxUrlIB20 = new System.Windows.Forms.CheckBox();
+            this.checkBoxUrlphpBB = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // textBoxNickList
@@ -112,7 +115,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(14, 68);
+            this.label3.Location = new System.Drawing.Point(12, 68);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(89, 13);
             this.label3.TabIndex = 5;
@@ -141,7 +144,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(14, 94);
+            this.label4.Location = new System.Drawing.Point(12, 94);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(91, 13);
             this.label4.TabIndex = 8;
@@ -223,7 +226,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(14, 123);
+            this.label12.Location = new System.Drawing.Point(12, 119);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(121, 13);
             this.label12.TabIndex = 17;
@@ -240,7 +243,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(13, 149);
+            this.label7.Location = new System.Drawing.Point(13, 145);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(54, 13);
             this.label7.TabIndex = 19;
@@ -256,7 +259,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(14, 178);
+            this.label10.Location = new System.Drawing.Point(12, 171);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(54, 13);
             this.label10.TabIndex = 21;
@@ -265,7 +268,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(14, 204);
+            this.label11.Location = new System.Drawing.Point(13, 197);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(64, 13);
             this.label11.TabIndex = 22;
@@ -273,14 +276,14 @@
             // 
             // textBoxUrlPhpBB
             // 
-            this.textBoxUrlPhpBB.Location = new System.Drawing.Point(217, 197);
+            this.textBoxUrlPhpBB.Location = new System.Drawing.Point(217, 194);
             this.textBoxUrlPhpBB.Name = "textBoxUrlPhpBB";
             this.textBoxUrlPhpBB.Size = new System.Drawing.Size(128, 20);
             this.textBoxUrlPhpBB.TabIndex = 23;
             // 
             // textBoxUrlIB20
             // 
-            this.textBoxUrlIB20.Location = new System.Drawing.Point(217, 171);
+            this.textBoxUrlIB20.Location = new System.Drawing.Point(217, 168);
             this.textBoxUrlIB20.Name = "textBoxUrlIB20";
             this.textBoxUrlIB20.Size = new System.Drawing.Size(128, 20);
             this.textBoxUrlIB20.TabIndex = 24;
@@ -312,11 +315,44 @@
             this.labelMaxPossilbeRegistrationIB20.TabIndex = 27;
             this.labelMaxPossilbeRegistrationIB20.Text = "/0";
             // 
+            // checkBoxUrlIB22
+            // 
+            this.checkBoxUrlIB22.AutoSize = true;
+            this.checkBoxUrlIB22.Location = new System.Drawing.Point(352, 144);
+            this.checkBoxUrlIB22.Name = "checkBoxUrlIB22";
+            this.checkBoxUrlIB22.Size = new System.Drawing.Size(108, 17);
+            this.checkBoxUrlIB22.TabIndex = 28;
+            this.checkBoxUrlIB22.Text = "Регистрировать";
+            this.checkBoxUrlIB22.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxUrlIB20
+            // 
+            this.checkBoxUrlIB20.AutoSize = true;
+            this.checkBoxUrlIB20.Location = new System.Drawing.Point(352, 170);
+            this.checkBoxUrlIB20.Name = "checkBoxUrlIB20";
+            this.checkBoxUrlIB20.Size = new System.Drawing.Size(108, 17);
+            this.checkBoxUrlIB20.TabIndex = 29;
+            this.checkBoxUrlIB20.Text = "Регистрировать";
+            this.checkBoxUrlIB20.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxUrlphpBB
+            // 
+            this.checkBoxUrlphpBB.AutoSize = true;
+            this.checkBoxUrlphpBB.Location = new System.Drawing.Point(352, 196);
+            this.checkBoxUrlphpBB.Name = "checkBoxUrlphpBB";
+            this.checkBoxUrlphpBB.Size = new System.Drawing.Size(108, 17);
+            this.checkBoxUrlphpBB.TabIndex = 30;
+            this.checkBoxUrlphpBB.Text = "Регистрировать";
+            this.checkBoxUrlphpBB.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(548, 377);
+            this.ClientSize = new System.Drawing.Size(465, 377);
+            this.Controls.Add(this.checkBoxUrlphpBB);
+            this.Controls.Add(this.checkBoxUrlIB20);
+            this.Controls.Add(this.checkBoxUrlIB22);
             this.Controls.Add(this.labelMaxPossilbeRegistrationIB20);
             this.Controls.Add(this.labelMaxPossilbeRegistrationPhpBB);
             this.Controls.Add(this.labelMaxPossilbeRegistrationIB22);
@@ -382,6 +418,9 @@
         private System.Windows.Forms.Label labelMaxPossilbeRegistrationIB22;
         private System.Windows.Forms.Label labelMaxPossilbeRegistrationPhpBB;
         private System.Windows.Forms.Label labelMaxPossilbeRegistrationIB20;
+        private System.Windows.Forms.CheckBox checkBoxUrlIB22;
+        private System.Windows.Forms.CheckBox checkBoxUrlIB20;
+        private System.Windows.Forms.CheckBox checkBoxUrlphpBB;
     }
 }
 
