@@ -87,11 +87,6 @@ namespace Gui
                         }
                     }
 
-                    if (checkBoxUrlphpBB.Checked)
-                    {
-                        
-                    }
-
                     this.Refresh();
                 }
             }
