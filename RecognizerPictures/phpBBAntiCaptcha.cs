@@ -18,6 +18,7 @@ namespace RecognizerPictures
         private static int _globalNumberSymbolsInImage = 0;
         private Bitmap _myBitMap;
         private List<string> _listWithAllShadesGray;
+        private string _textFromCapcha = string.Empty;
 
         public phpBBAntiCaptcha()
         {
@@ -26,33 +27,12 @@ namespace RecognizerPictures
 
         public String recognizeImage(Bitmap image)
         {
-            return String.Empty;
-        }
+            
+            /*TUT NUZHNUY HTML
+            richTextBox2.Clear();
+            richTextBox2.AppendText(htmlCode);*/
+            _myBitMap = new Bitmap("capcha.bmp");
 
-        #region Конпка, для проекта, в котором происходит отладка
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            //for (int t = 1; t < 128; t++)
-            //{
-
-            using (var client = new WebClient())
-            {
-                client.DownloadFile(
-                    "http://localhost/forum/www/ucp.php?mode=confirm&confirm_id=a95b95b4d425f334f1a4e502036ea75c&type=1&sid=4b3e600d9335c450c146aed5bcf622b8",
-                    "asde.bmp");
-            }
-
-
-            _myBitMap = new Bitmap("asde.bmp");
-            //_myBitMap = new Bitmap("img121.jpg");
-            //_myBitMap = new Bitmap("img" + t.ToString() + ".jpg");
-
-            /*
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox1.ClientSize = new Size(320, 50);
-            pictureBox1.Image = _myBitMap;
-            */
 
             _listWithAllShadesGray = GetAllShadesGray(_myBitMap); // function
             var clearEnumerableWithAllShadesGray = _listWithAllShadesGray.Distinct();
@@ -60,13 +40,7 @@ namespace RecognizerPictures
 
             _myBitMap = Filter(clearListFromEnumerableListWithAllShadesGray, _myBitMap); // function
 
-            /*
-            pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox2.ClientSize = new Size(320, 50);
-            pictureBox2.Image = _myBitMap;
-            */
-            
-            _myBitMap.Save(Environment.CurrentDirectory + @"/ds.jpg");
+
             Bitmap[] test = CutImageIntoPieces(_myBitMap);
 
             //List<PictureBox> pb = Controls.OfType<PictureBox>().ToList();
@@ -78,200 +52,93 @@ namespace RecognizerPictures
             for (int i = 0; i < _globalNumberSymbolsInImage; i++)
             {
 
-                newBitmapForNewImage40Na40 = new Bitmap(40, 40);
-                for (int v = 0; v < newBitmapForNewImage40Na40.Width; v++)
-                {
-                    for (int g = 0; g < newBitmapForNewImage40Na40.Height; g++)
-                    {
-                        newBitmapForNewImage40Na40.SetPixel(v, g, Color.White);
-                    }
-                }
+                newBitmapForNewImage40Na40 = createNewBitmap40na40(new Bitmap(40, 40));
                 clearBt = deleteWhiteStripesInHeight(test[index]);
-                for (int v = 0; v < clearBt.Width; v++)
-                {
-                    for (int g = 0; g < clearBt.Height; g++)
-                    {
-                        newBitmapForNewImage40Na40.SetPixel(v, g, clearBt.GetPixel(v, g));
-                    }
-                }
-                //pb[step].ClientSize = new Size(newBitmapForNewImage40Na40.Width, newBitmapForNewImage40Na40.Height);
-                //pb[step].Image = newBitmapForNewImage40Na40;
+                newBitmapForNewImage40Na40 = putBlackPixelOnNewBitmap(newBitmapForNewImage40Na40, clearBt);
                 var countBlackPixelInOneSmolSquare = new int[4];
-                for (int v = 0; v < clearBt.Width - 1; v++)
-                {
-                    for (int g = 0; g < clearBt.Height - 1; g++)
-                    {
-                        if (newBitmapForNewImage40Na40.GetPixel(v, g).Name == "ff000000")
-                        {
-                            countBlackPixelInOneSmolSquare[0] = 1;
-                        }
-                        else
-                        {
-                            countBlackPixelInOneSmolSquare[0] = 0;
-                        }
-                        if (newBitmapForNewImage40Na40.GetPixel(v + 1, g).Name == "ff000000")
-                        {
-                            countBlackPixelInOneSmolSquare[1] = 1;
-                        }
-                        else
-                        {
-                            countBlackPixelInOneSmolSquare[1] = 0;
-                        }
-                        if (newBitmapForNewImage40Na40.GetPixel(v, g + 1).Name == "ff000000")
-                        {
-                            countBlackPixelInOneSmolSquare[2] = 1;
-                        }
-                        else
-                        {
-                            countBlackPixelInOneSmolSquare[2] = 0;
-                        }
-                        if (newBitmapForNewImage40Na40.GetPixel(v + 1, g + 1).Name == "ff000000")
-                        {
-                            countBlackPixelInOneSmolSquare[3] = 1;
-                        }
-                        else
-                        {
-                            countBlackPixelInOneSmolSquare[3] = 0;
-                        }
-                        if (countBlackPixelInOneSmolSquare.Sum() >= 1)
-                        {
-                            newBitmapForNewImage40Na40.SetPixel(v, g, Color.Black);
-                        }
-                    }
-                }
-                newBitmapForNewImage40Na40.Save(Environment.CurrentDirectory + "\\2progona\\" + index.ToString() + "AAA.bmp");
+                newBitmapForNewImage40Na40 = createSaturatedBitmap(newBitmapForNewImage40Na40, clearBt,
+                                                                   countBlackPixelInOneSmolSquare);
+                newBitmapForNewImage40Na40.Save(Environment.CurrentDirectory + "\\temp\\" + index.ToString() + ".bmp");
                 SaveBin(Environment.CurrentDirectory + "\\temp\\", index.ToString(), newBitmapForNewImage40Na40); // делает файл с весами
-                //*****************
-                //richTextBox1.AppendText(GetCharFromImage(Environment.CurrentDirectory + "\\temp\\" + index.ToString() + ".in.txt")); // распознаёт файл с весами
-                //*****************
+                _textFromCapcha += GetCharFromImage(Environment.CurrentDirectory + "\\temp\\" + index.ToString() + ".in.txt");
                 index++;
                 step--;
             }
-
-            //------------------------------------------------------------
-            //Вызов функций, происходит в цикле:
-            //------------------------------------------------------------
-            //for (int i = 0; i < symbols.Length; i++)
-            //{
-            //  newsymbols[i] = ResizeBitmap(DeleteLinesInColumn(DeleteLinesInRow(symbols[i], 1), 1), 8, 10); //подгоняет под размер
-            //newsymbols[i].Save(Environment.CurrentDirectory + "\\temp\\" + nameoffile + string.Format("{0:00}", i) + ".bmp"); // сохраняет файл  с символов
-
-            //}
-
-
-
-
-            //}
-            //MessageBox.Show("The end");
-            /*
-             * 
-             * sss = richTextBox1.Text.Trim();
-                // Формируем строку с параметрами
-            string secondStepForm = "username=Trishasha" +
-                                "&email=Trisha@gmail.com" +
-                                "&email_confirm=Trisha@gmail.com" +
-                                "&new_password=Trishacom" +
-                                "&password_confirm=Trishacom" +
-                                "&confirm_code=" + (sss);
-            //refresh_vc
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://localhost/forum/www/ucp.php?mode=register");
-
-                // Настраиваем параметры запроса
-                request.UserAgent = "Mozilla/5.0";
-                request.Method = "POST";
-
-                // Указываем метод отправки данных скрипту
-                request.AllowAutoRedirect = true;
-                request.Referer = "http://localhost/forum/www/index.php";
-                //request.CookieContainer = cookieCont;
-
-                // Указываем тип отправляемых данных
-                request.ContentType = "application/x-www-form-urlencoded";
-
-                // Преобразуем данные к соответствующую кодировку
-                byte[] EncodedPostParams = Encoding.ASCII.GetBytes(secondStepForm);
-                request.ContentLength = EncodedPostParams.Length;
-
-                // Записываем данные в поток
-                request.GetRequestStream().Write(EncodedPostParams,
-                                                 0,
-                                                 EncodedPostParams.Length);
-
-                request.GetRequestStream().Close();
-
-                // Получаем ответ
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-                // Получаем html-код страницы
-                string html = new StreamReader(response.GetResponseStream(),
-                                               Encoding.UTF8).ReadToEnd();
-
-                richTextBox2.AppendText(html);
-
-                //Regex re = new Regex("href=\"(.*?)\" id=\"lowres\"");
-            string strr = "href=\"\\./index.php\\?sid=(.*?)\"";
-            Regex re = new Regex(strr);
-            Match match = re.Match(html);
-            string url = match.Groups[1].Value; // Вот тут url из href
-            MessageBox.Show(url);
-
-
-            string secondStepForm1 = "sid=" + url.Trim() + 
-                                "&username=Trishasha" +
-                                "&email=Trisha@gmail.com" +
-                                "&email_confirm=Trisha@gmail.com" +
-                                "&new_password=Trishacom" +
-                                "&password_confirm=Trishacom" +
-                                "&confirm_code=" + (sss);
-            //refresh_vc
-            HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create("http://localhost/forum/www/ucp.php?mode=register");
-
-            // Настраиваем параметры запроса
-            request1.UserAgent = "Mozilla/5.0";
-            request1.Method = "POST";
-
-            // Указываем метод отправки данных скрипту
-            request1.AllowAutoRedirect = true;
-            request1.Referer = "http://localhost/forum/www/index.php";
-            //request.CookieContainer = cookieCont;
-
-            // Указываем тип отправляемых данных
-            request1.ContentType = "application/x-www-form-urlencoded";
-
-            // Преобразуем данные к соответствующую кодировку
-            byte[] EncodedPostParams1 = Encoding.ASCII.GetBytes(secondStepForm1);
-            request1.ContentLength = EncodedPostParams1.Length;
-
-            // Записываем данные в поток
-            request1.GetRequestStream().Write(EncodedPostParams1,
-                                             0,
-                                             EncodedPostParams1.Length);
-
-            request1.GetRequestStream().Close();
-
-            // Получаем ответ
-            HttpWebResponse response1 = (HttpWebResponse)request1.GetResponse();
-
-            // Получаем html-код страницы
-            string html1 = new StreamReader(response1.GetResponseStream(),
-                                           Encoding.UTF8).ReadToEnd();
-
-
-            richTextBox3.AppendText(html1);
-
-
-            string strr1 = "src=\"(.*?)\"";
-            Regex re1 = new Regex(strr1);
-            Match match1 = re.Match(html1);
-            string url1 = match1.Groups[1].Value; // Вот тут url из href
-            MessageBox.Show(url1);
-             * 
-             */
-            //}
+            return _textFromCapcha;
         }
 
-        #endregion
+        private Bitmap createNewBitmap40na40(Bitmap btmp)
+        {
+            for (int v = 0; v < btmp.Width; v++)
+            {
+                for (int g = 0; g < btmp.Height; g++)
+                {
+                    btmp.SetPixel(v, g, Color.White);
+                }
+            }
+            return btmp;
+        }
 
+        private Bitmap putBlackPixelOnNewBitmap(Bitmap btmp, Bitmap wBitmap)
+        {
+            for (int v = 0; v < wBitmap.Width; v++)
+            {
+                for (int g = 0; g < wBitmap.Height; g++)
+                {
+                    btmp.SetPixel(v, g, wBitmap.GetPixel(v, g));
+                }
+            }
+            return btmp;
+        }
+
+        private Bitmap createSaturatedBitmap(Bitmap btmp, Bitmap wBitmap, int[] countBlackPixelInOneSmolSquare)
+        {
+            for (int v = 0; v < wBitmap.Width - 1; v++)
+            {
+                for (int g = 0; g < wBitmap.Height - 1; g++)
+                {
+                    if (btmp.GetPixel(v, g).Name == "ff000000")
+                    {
+                        countBlackPixelInOneSmolSquare[0] = 1;
+                    }
+                    else
+                    {
+                        countBlackPixelInOneSmolSquare[0] = 0;
+                    }
+                    if (btmp.GetPixel(v + 1, g).Name == "ff000000")
+                    {
+                        countBlackPixelInOneSmolSquare[1] = 1;
+                    }
+                    else
+                    {
+                        countBlackPixelInOneSmolSquare[1] = 0;
+                    }
+                    if (btmp.GetPixel(v, g + 1).Name == "ff000000")
+                    {
+                        countBlackPixelInOneSmolSquare[2] = 1;
+                    }
+                    else
+                    {
+                        countBlackPixelInOneSmolSquare[2] = 0;
+                    }
+                    if (btmp.GetPixel(v + 1, g + 1).Name == "ff000000")
+                    {
+                        countBlackPixelInOneSmolSquare[3] = 1;
+                    }
+                    else
+                    {
+                        countBlackPixelInOneSmolSquare[3] = 0;
+                    }
+                    if (countBlackPixelInOneSmolSquare.Sum() >= 1)
+                    {
+                        btmp.SetPixel(v, g, Color.Black);
+                    }
+                }
+            }
+            return btmp;
+        }
+
+       
         #region Убирает лишнее пространство с разрезаных картинок
 
         private Bitmap deleteWhiteStripesInHeight(Bitmap image)
@@ -464,7 +331,6 @@ namespace RecognizerPictures
 
             _net.NetOUT(x, out y);
             var numb = Array.IndexOf(y, y.Max());
-            //richTextBox2.AppendText(numb.ToString() + "\n"); //КОММЕНТАРИЙ ДОБАВИЛ ДЕНИС - НЕ НАЙДЕН ЭЛЕМЕНТ richTextBox2
             switch (numb)
             {
                 case 0:
@@ -599,222 +465,6 @@ namespace RecognizerPictures
             {
                 return false;
             }
-        }
-
-        #endregion
-
-        #region Тут остатки разного кода, на всякий случай
-
-        private void SHLAK(Bitmap MBT)
-        {
-            /*
-             * private Bitmap[] GetCutImage(Bitmap bt)
-        {
-            var numberSymbolsInImage = 0;
-            int[] arrayWithIndexBlackPixelFromImage = new int[bt.Width];
-            int indexBlackPixelOnImage = 0;
-
-            for (int i = 0; i < bt.Width; i++)
-            {
-                var countBlackPixelOnImage = 0;
-
-                for (int j = 0; j < bt.Height; j++)
-                {
-                    if (bt.GetPixel(i, j).Name == "ff000000")
-                    {
-                        countBlackPixelOnImage++;
-                    }
-                }
-                if (countBlackPixelOnImage < 2)
-                {
-                    arrayWithIndexBlackPixelFromImage[indexBlackPixelOnImage] = i;
-                    indexBlackPixelOnImage++;
-                }
-            }
-
-            int[,] numberSymbolsInImageArr = new int[10, 2]; //BOLSHE 10 simvolov ne budet -> 10 i 2
-
-            for (int i = 0; i < indexBlackPixelOnImage; i++)
-            {
-                if (i + 1 < indexBlackPixelOnImage && arrayWithIndexBlackPixelFromImage[i + 1] - arrayWithIndexBlackPixelFromImage[i] > 1)
-                {
-                    numberSymbolsInImageArr[numberSymbolsInImage, 0] = arrayWithIndexBlackPixelFromImage[i + 1] - arrayWithIndexBlackPixelFromImage[i];
-                    numberSymbolsInImageArr[numberSymbolsInImage, 1] = arrayWithIndexBlackPixelFromImage[i];
-                   
-                    numberSymbolsInImage++;
-                }
-            }
-            
-            GlobalNumberSymbolsInImage = numberSymbolsInImage;
-            var bitmapWithCutPictures = new Bitmap[numberSymbolsInImage];
-
-            for (int i = 0; i < numberSymbolsInImage; i++)
-            {
-                bitmapWithCutPictures[i] = new Bitmap(numberSymbolsInImageArr[i, 0] + 1, bt.Height);
-            }
-
-            for (int i = 0; i < numberSymbolsInImage; i++)
-            {
-                var count = 0;
-                for (int j = numberSymbolsInImageArr[i, 1]; j <= numberSymbolsInImageArr[i, 0] + numberSymbolsInImageArr[i, 1]; j++)
-                {
-                    for (int k = 0; k < bt.Height; k++)
-                    {
-                        bitmapWithCutPictures[i].SetPixel(count, k, bt.GetPixel(j, k));
-                    }
-                    count++;
-                }
-            }
-            return bitmapWithCutPictures;
-        }
-             * 
-             * 
-             * 
-             * 
-             * Bitmap qw = MBT;
-            for (int i = 0; i < qw.Width; i++)
-            {
-                for (int j = 0; j < qw.Height; j++)
-                {
-                    Color cl = MBT.GetPixel(i, j);
-
-                    //if (String.Compare(cl.Name.ToString(), "d0d0d0") == 0 || String.Compare(cl.Name.ToString(), "9e9e9e") == 0 || String.Compare(cl.Name.ToString(), "949494") == 0 || String.Compare(cl.Name.ToString(), "a1a1a1") == 0)
-                    //MessageBox.Show(cl.Name.ToString());
-                    if (String.Compare(cl.Name.ToString(), "040404") != 0 && String.Compare(cl.Name.ToString(), "fafafa") != 0)
-                    {
-                        qw.SetPixel(i, j, Color.Red);
-                    }
-                }
-            }
-            
-
-            pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox2.ClientSize = new Size(320, 50);
-            pictureBox2.Image = (Image)qw;*/
-
-            /*Bitmap b1 = new Bitmap(h[0, 0]+1, MyBitMap.Height);
-            Bitmap b2 = new Bitmap(h[1, 0] + 1, MyBitMap.Height);
-            Bitmap b3 = new Bitmap(h[2, 0] + 1, MyBitMap.Height);
-            Bitmap b4 = new Bitmap(h[3, 0] + 1, MyBitMap.Height);
-
-            Bitmap[] bb = {b1,b2,b3,b4 };
-
-            for (int i = 0; i < 4; i++)
-            {
-                var jjj = 0;
-                for (int j = h[i, 1]; j <= h[i, 0] + h[i, 1]; j++)
-                {
-                    for (int k = 0; k < MyBitMap.Height; k++)
-                    {
-                        bb[i].SetPixel(jjj, k, bt.GetPixel(j, k));
-                    }
-                    jjj++;
-                }
-            }
-            pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox3.ClientSize = new Size(NumberSymbolsInImageArr[0, 0] + 1, MyBitMap.Height);
-            pictureBox3.Image = (Image)BitmapWithCutPictures[0];
-
-            pictureBox4.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox4.ClientSize = new Size(NumberSymbolsInImageArr[0, 0] + 1, MyBitMap.Height);
-            pictureBox4.Image = (Image)BitmapWithCutPictures[1];
-
-            pictureBox5.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox5.ClientSize = new Size(NumberSymbolsInImageArr[0, 0] + 1, MyBitMap.Height);
-            pictureBox5.Image = (Image)BitmapWithCutPictures[2];
-
-            pictureBox6.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox6.ClientSize = new Size(NumberSymbolsInImageArr[0, 0] + 1, MyBitMap.Height);
-            pictureBox6.Image = (Image)BitmapWithCutPictures[3];*/
-            /*for (int i = 0; i < MyBitMap.Width; i++)
-            {
-                for (int j = 0; j < MyBitMap.Height; j++)
-                {
-                    cl = bt.GetPixel(i, j);
-                    if (String.Compare(cl.Name.ToString(), "ffffffff") != 0)
-                    {
-                        myblack = myblack + 1;
-                        if (myblack == 2)
-                        {
-                            buf = i;
-                        }
-                    }
-                    else
-                    {
-                        mywhite = mywhite + 1;
-                    }
-                }
-                if (myblack >= 2 && mywhite < MyBitMap.Height)
-                {
-                    buf = i;
-                    for (int r = 0; r < MyBitMap.Height; r++)
-                    {
-                        cl = bt.GetPixel(buf, r);
-                        blwh[count, r] = cl.Name.ToString();
-                    }
-                    count = count + 1;
-                    //MessageBox.Show(count.ToString());
-                }
-                else
-                {
-                    re = count;
-                    
-                    nbt = new Bitmap(100, MyBitMap.Height);
-                    for (int ii = 0; ii < 30; ii++)
-                    {
-                        for (int j = 0; j < MyBitMap.Height; j++)
-                        {
-                            //richTextBox1.Text += blwh[i, j] + "\n";
-                            if (String.Compare(blwh[ii, j], "ffffffff") != 0)
-                            {
-                                nbt.SetPixel(ii, j, Color.Black);
-                            }
-                            else
-                            {
-                                nbt.SetPixel(ii, j, Color.White);
-                            }
-                            //nbt.SetPixel(i, j, blwh[i, j]);
-                        }
-                    }
-                    count = 0;
-                }
-                myblack = 0;
-                mywhite = 0;
-
-
-                
-
-
-               *count = buf;
-                for (int w = buf; w < count; w++)
-                {
-
-                }
-            }*/
-
-            /*
-                MessageBox.Show(PB.Count.ToString());
-                pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
-                pictureBox3.ClientSize = new Size(test[0].Width, test[0].Height);
-                pictureBox3.Image = (Image)test[0];
-
-                pictureBox4.SizeMode = PictureBoxSizeMode.StretchImage;
-                pictureBox4.ClientSize = new Size(test[1].Width, test[1].Height);
-                pictureBox4.Image = (Image)test[1];
-
-                pictureBox5.SizeMode = PictureBoxSizeMode.StretchImage;
-                pictureBox5.ClientSize = new Size(test[2].Width, test[2].Height);
-                pictureBox5.Image = (Image)test[2];
-
-                pictureBox6.SizeMode = PictureBoxSizeMode.StretchImage;
-                pictureBox6.ClientSize = new Size(test[3].Width, test[3].Height);
-                pictureBox6.Image = (Image)test[3];
-            */
-
-            /*pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox3.ClientSize = new Size(320, 50);
-            pictureBox3.Image = (Image)NumberOne(MyBitMap);*/
-            //GetClearImg(MyBitMap);
         }
 
         #endregion

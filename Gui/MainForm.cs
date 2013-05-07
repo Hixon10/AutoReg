@@ -33,6 +33,7 @@ namespace Gui
         {
             InitializeComponent();
             backgroundWorkerIB22.WorkerReportsProgress = true;
+            backgroundWorkerPHPBB.WorkerReportsProgress = true;
             _intellectBoard22AntiCaptcha = new IntellectBoard22AntiCaptcha();
             _intellectBoard20AntiCaptcha = new IntellectBoard20AntiCaptcha();
             _phpBBAntiCaptcha = new phpBBAntiCaptcha();
@@ -61,6 +62,15 @@ namespace Gui
                     {
                         // Start the asynchronous operation.
                         backgroundWorkerIB22.RunWorkerAsync();
+                    }
+                }
+
+                if (checkBoxUrlphpBB.Checked)
+                {
+                    if (backgroundWorkerPHPBB.IsBusy != true)
+                    {
+                        // Start the asynchronous operation.
+                        backgroundWorkerPHPBB.RunWorkerAsync();
                     }
                 }
 
@@ -188,7 +198,7 @@ namespace Gui
             for (int i = 0; i < _possiblenumberAcc; i++)
             {
                 //Важно, используются левые данные для регистрации, для того чтобы не проходила регистрация
-                if (_intellectBoard22Reg.reg(_urlIntellectBoard22Forum, _emails[0], _passwords[0], _nicks[0]) !=
+                if (_phpBbReg.reg(_urlIntellectBoard22Forum, _emails[0], _passwords[0], _nicks[0]) !=
                     RegBase.Status.IncorrectCaptcha)
                 {
                     progress++;
@@ -206,5 +216,35 @@ namespace Gui
         {
             MessageBox.Show("Регистрация на форуме IntellectBoard22 завершена!");
         }
+
+        private void backgroundWorkerPHPBB_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+            int progress = 0;
+
+            for (int i = 0; i < _possiblenumberAcc; i++)
+            {
+                //Важно, используются левые данные для регистрации, для того чтобы не проходила регистрация
+                if (_intellectBoard22Reg.reg(_urlphpBBForum, _emails[0], _passwords[0], _nicks[0]) !=
+                    RegBase.Status.IncorrectCaptcha)
+                {
+                    progress++;
+                    worker.ReportProgress(progress);
+                }
+            }
+        }
+
+        private void backgroundWorkerPHPBB_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            labelphpBBStat.Text = e.ProgressPercentage.ToString();
+        }
+
+        private void backgroundWorkerPHPBB_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            MessageBox.Show("Регистрация на форуме phpBB завершена!");
+        }
+
+
+
     }
 }

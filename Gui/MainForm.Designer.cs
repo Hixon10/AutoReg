@@ -60,6 +60,7 @@
             this.checkBoxUrlIB20 = new System.Windows.Forms.CheckBox();
             this.checkBoxUrlphpBB = new System.Windows.Forms.CheckBox();
             this.backgroundWorkerIB22 = new System.ComponentModel.BackgroundWorker();
+            this.backgroundWorkerPHPBB = new System.ComponentModel.BackgroundWorker();
             this.SuspendLayout();
             // 
             // textBoxNickList
@@ -352,6 +353,12 @@
             this.backgroundWorkerIB22.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerIB22_ProgressChanged);
             this.backgroundWorkerIB22.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerIB22_RunWorkerCompleted);
             // 
+            // backgroundWorkerPHPBB
+            // 
+            this.backgroundWorkerPHPBB.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerPHPBB_DoWork);
+            this.backgroundWorkerPHPBB.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerPHPBB_ProgressChanged);
+            this.backgroundWorkerPHPBB.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerPHPBB_RunWorkerCompleted);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -429,6 +436,7 @@
         private System.Windows.Forms.CheckBox checkBoxUrlIB20;
         private System.Windows.Forms.CheckBox checkBoxUrlphpBB;
         private System.ComponentModel.BackgroundWorker backgroundWorkerIB22;
+        private System.ComponentModel.BackgroundWorker backgroundWorkerPHPBB;
     }
 }
 
