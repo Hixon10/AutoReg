@@ -193,7 +193,7 @@ namespace Gui
             for (int i = 0; i < _possiblenumberAcc; i++)
             {
                 //Важно, используются левые данные для регистрации, для того чтобы не проходила регистрация
-                if (_phpBbReg.reg(_urlIntellectBoard22Forum, _emails[0], _passwords[0], _nicks[0]) !=
+                if (_intellectBoard22Reg.reg(_urlIntellectBoard22Forum, _emails[0], _passwords[0], _nicks[0]) !=
                     RegBase.Status.IncorrectCaptcha)
                 {
                     progress++;
@@ -220,7 +220,7 @@ namespace Gui
             for (int i = 0; i < _possiblenumberAcc; i++)
             {
                 //Важно, используются левые данные для регистрации, для того чтобы не проходила регистрация
-                if (_intellectBoard22Reg.reg(_urlphpBBForum, _emails[0], _passwords[0], _nicks[0]) !=
+                if (_phpBbReg.reg(_urlphpBBForum, _emails[0], _passwords[0], _nicks[0]) !=
                     RegBase.Status.IncorrectCaptcha)
                 {
                     progress++;
