@@ -27,7 +27,7 @@ namespace Gui
         private int _possiblenumberAcc = 0;
         private String _urlIntellectBoard22Forum;
         private String _urlIntellectBoard20Forum;
-        private String _urlphpBBForum;
+        private String _urlphpBbForum;
 
         public MainForm()
         {
@@ -53,7 +53,7 @@ namespace Gui
                 labelMaxPossilbeRegistrationPhpBB.Text = "/" + _possiblenumberAcc;
                 labelIntellectBoard22Stat.Text = "0";
                 labelIntellectBoard20Stat.Text = "0";
-                labelIntellectBoard22Stat.Text = "0";
+                labelphpBBStat.Text = "0";
                 this.Refresh();
 
                 if (checkBoxUrlIB22.Checked)
@@ -87,6 +87,16 @@ namespace Gui
                         }
                     }
 
+                    if (checkBoxUrlphpBB.Checked)
+                    {
+                        //Важно, используются левые данные для регистрации, для того чтобы не проходила регистрация
+                        if (_phpBbReg.reg(_urlphpBbForum, _emails[0], _passwords[0], _nicks[0]) !=
+                            RegBase.Status.IncorrectCaptcha)
+                        {
+                            int digit = int.Parse(labelphpBBStat.Text);
+                            labelphpBBStat.Text = (digit + 1).ToString();
+                        }
+                    }
                     this.Refresh();
                 }
             }
@@ -127,7 +137,7 @@ namespace Gui
             _urlIntellectBoard20Forum = textBoxUrlIB20.Text;
 
             if (String.IsNullOrWhiteSpace(textBoxUrlPhpBB.Text) && checkBoxUrlphpBB.Checked) return false;
-            _urlphpBBForum = textBoxUrlPhpBB.Text;
+            _urlphpBbForum = textBoxUrlPhpBB.Text;
 
             return true;
         }
@@ -220,7 +230,7 @@ namespace Gui
             for (int i = 0; i < _possiblenumberAcc; i++)
             {
                 //Важно, используются левые данные для регистрации, для того чтобы не проходила регистрация
-                if (_phpBbReg.reg(_urlphpBBForum, _emails[0], _passwords[0], _nicks[0]) !=
+                if (_phpBbReg.reg(_urlphpBbForum, _emails[0], _passwords[0], _nicks[0]) !=
                     RegBase.Status.IncorrectCaptcha)
                 {
                     progress++;

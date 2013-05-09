@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using RecognizerPictures;
 
 namespace AutoReg
@@ -14,6 +15,8 @@ namespace AutoReg
     {
         public phpBBReg(IAntiCaptcha antiCaptcha) : base(antiCaptcha) { }
 
+        #region Основные переменые
+
         private string _sid = string.Empty;
         private string _htmlCode = string.Empty;
         private string _pathToCaptcha = string.Empty;
@@ -21,6 +24,8 @@ namespace AutoReg
         private const string PathToRegistration = "http://forum.ipadiz.ru/ucp.php?mode=register";
         private string _answer = string.Empty;
         private Bitmap _newBtmp;
+
+        #endregion
 
         #region Регистрирует
 
@@ -38,7 +43,6 @@ namespace AutoReg
             _replaceAmp = getLinkToCapthcaFromUcp(linkToCaptcha, _htmlCode).Replace("amp;", "");
             _newBtmp = new Bitmap(GetCapthcaFromPage("http://forum.ipadiz.ru/ucp.php" + _replaceAmp));
             _answer = antiCaptcha.recognizeImage(_newBtmp);
-
             return getStatusRegestration(_answer, _htmlCode);
         }
 
@@ -75,9 +79,7 @@ namespace AutoReg
             HttpWebResponse response = (HttpWebResponse) request.GetResponse();
             Stream st = response.GetResponseStream();
             Bitmap bitmap = new Bitmap(st);
-            bitmap.Save("capcha.bmp");
-            Bitmap bm = new Bitmap("capcha.bmp");
-            return bm;
+            return bitmap;
         }
 
         #endregion

@@ -6,12 +6,16 @@ using System.Net;
 using System.Text;
 using System.Drawing;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows.Forms;
 using ClassLibraryNeuralNetworks;
 
 namespace RecognizerPictures
 {
     public class phpBBAntiCaptcha: IAntiCaptcha
     {
+        #region Основные переменые
+
         public Bitmap Image { get; set; }
         public String TextFromImage { get; set; }
         private NeuralNW _net;
@@ -20,18 +24,32 @@ namespace RecognizerPictures
         private List<string> _listWithAllShadesGray;
         private string _textFromCapcha = string.Empty;
 
+        #endregion
+
+        #region Конструктор класса phpBBAntiCaptcha, инициализирует НС
+
         public phpBBAntiCaptcha()
         {
             _net = new NeuralNW(Directory.GetCurrentDirectory() + "\\..\\..\\..\\RecognizerPictures\\nwFiles\\phpbb.nw");
         }
 
+        #endregion
+
+        #region Распознавание картинки
+
+        /// <summary>
+        /// Распознавание картинки
+        /// </summary>
+        /// <param name="image">Изображение</param>
+        /// <returns></returns>
+
         public String recognizeImage(Bitmap image)
         {
-            
+
             /*TUT NUZHNUY HTML
             richTextBox2.Clear();
             richTextBox2.AppendText(htmlCode);*/
-            _myBitMap = new Bitmap("capcha.bmp");
+            _myBitMap = new Bitmap(image);
 
 
             _listWithAllShadesGray = GetAllShadesGray(_myBitMap); // function
@@ -49,23 +67,43 @@ namespace RecognizerPictures
             int step = _globalNumberSymbolsInImage;
             Bitmap clearBt;
             Bitmap newBitmapForNewImage40Na40;
-            for (int i = 0; i < _globalNumberSymbolsInImage; i++)
+            _textFromCapcha = "";
+            for (int i = 0; i < test.Count(); i++)
             {
 
                 newBitmapForNewImage40Na40 = createNewBitmap40na40(new Bitmap(40, 40));
-                clearBt = deleteWhiteStripesInHeight(test[index]);
+                clearBt = deleteWhiteStripesInHeight(test[i]);
                 newBitmapForNewImage40Na40 = putBlackPixelOnNewBitmap(newBitmapForNewImage40Na40, clearBt);
                 var countBlackPixelInOneSmolSquare = new int[4];
                 newBitmapForNewImage40Na40 = createSaturatedBitmap(newBitmapForNewImage40Na40, clearBt,
                                                                    countBlackPixelInOneSmolSquare);
-                newBitmapForNewImage40Na40.Save(Environment.CurrentDirectory + "\\temp\\" + index.ToString() + ".bmp");
-                SaveBin(Environment.CurrentDirectory + "\\temp\\", index.ToString(), newBitmapForNewImage40Na40); // делает файл с весами
-                _textFromCapcha += GetCharFromImage(Environment.CurrentDirectory + "\\temp\\" + index.ToString() + ".in.txt");
+                //newBitmapForNewImage40Na40.Save(Environment.CurrentDirectory  + index.ToString() + ".bmp");
+                //SaveBin(Environment.CurrentDirectory + "\\temp\\", index.ToString(), newBitmapForNewImage40Na40); // делает файл с весами
+                //_textFromCapcha += GetCharFromImage(Environment.CurrentDirectory + "\\temp\\new\\" + index.ToString() + ".in.txt");
+                _textFromCapcha +=
+                    GetCharFromImage(SaveBin(Environment.CurrentDirectory + "\\temp\\", index.ToString(),
+                                             newBitmapForNewImage40Na40));
+
+                /*newBitmapForNewImage40Na40.Save(Environment.CurrentDirectory + index.ToString() + ".bmp");
+                SaveBin(Environment.CurrentDirectory, index.ToString(), newBitmapForNewImage40Na40); // делает файл с весами
+                _textFromCapcha += GetCharFromImage(Environment.CurrentDirectory + index.ToString() + ".in.txt");
+                */
                 index++;
                 step--;
             }
+            //MessageBox.Show(_textFromCapcha);
             return _textFromCapcha;
         }
+
+        #endregion
+
+        #region Создает новый битмап 40 на 40 пикселей
+
+        /// <summary>
+        /// Создает новый битмап 40 на 40 пикселей
+        /// </summary>
+        /// <param name="btmp">Изображение</param>
+        /// <returns></returns>
 
         private Bitmap createNewBitmap40na40(Bitmap btmp)
         {
@@ -79,6 +117,17 @@ namespace RecognizerPictures
             return btmp;
         }
 
+        #endregion
+
+        #region Заполняет битмап 40 на 40 пикселей пикселями с картинки
+
+        /// <summary>
+        /// Заполняет битмап 40 на 40 пикселей пикселями с картинки
+        /// </summary>
+        /// <param name="btmp">Новое изображение</param>
+        /// <param name="wBitmap">Текущее изображение</param>
+        /// <returns></returns>
+
         private Bitmap putBlackPixelOnNewBitmap(Bitmap btmp, Bitmap wBitmap)
         {
             for (int v = 0; v < wBitmap.Width; v++)
@@ -90,6 +139,18 @@ namespace RecognizerPictures
             }
             return btmp;
         }
+
+        #endregion
+
+        #region Создает насущенную картинку для каждого символа с капчи
+
+        /// <summary>
+        /// Создает насущенную картинку для каждого символа с капчи
+        /// </summary>
+        /// <param name="btmp">Новое изображение</param>
+        /// <param name="wBitmap">Текущее изображение</param>
+        /// <param name="countBlackPixelInOneSmolSquare">Массив для подсчета количества черных пикселей</param>
+        /// <returns></returns>
 
         private Bitmap createSaturatedBitmap(Bitmap btmp, Bitmap wBitmap, int[] countBlackPixelInOneSmolSquare)
         {
@@ -138,8 +199,15 @@ namespace RecognizerPictures
             return btmp;
         }
 
-       
+        #endregion
+
         #region Убирает лишнее пространство с разрезаных картинок
+
+        /// <summary>
+        /// Убирает лишнее пространство с разрезаных картинок
+        /// </summary>
+        /// <param name="image">Изображение</param>
+        /// <returns></returns>
 
         private Bitmap deleteWhiteStripesInHeight(Bitmap image)
         {
@@ -184,6 +252,14 @@ namespace RecognizerPictures
 
         #region Разрезает капчу на отдельные картинки с цифрами
 
+        /// <summary>
+        /// Разрезает капчу на отдельные картинки с цифрами
+        /// </summary>
+        /// <param name="image">Изображение</param>
+        /// <param name="numberOfPixelsInColumn">Количество пикселей в столбце, которое учитывает столбец, как подходящий</param>
+        /// <param name="numberOfPixelsInRow">Количество пикселей, в которых располагается символ</param>
+        /// <param name="colorName">Цвет, которым написаны символы</param>
+        /// <returns>Массив изображений, содержащий все символы</returns>
         public static Bitmap[] CutImageIntoPieces(Bitmap image, int numberOfPixelsInColumn = 1,
                                                   int numberOfPixelsInRow = 2, string colorName = "ff000000")
         {
@@ -253,15 +329,21 @@ namespace RecognizerPictures
 
         #region Лист со всеми оттенками серого
 
+        /// <summary>
+        /// Лист со всеми оттенками серого
+        /// </summary>
+        /// <param name="bm">Изображение</param>
+        /// <returns></returns>
+
         private List<string> GetAllShadesGray(Bitmap bm)
         {
             var list = new List<string>();
-
+            Bitmap bmm = bm;
             for (int i = 0; i < 10; i++)
             {
                 for (int j = 0; j < 50; j++)
                 {
-                    Color cl = bm.GetPixel(i, j);
+                    Color cl = bmm.GetPixel(i, j);
                     list.Add(cl.Name);
                 }
             }
@@ -281,7 +363,15 @@ namespace RecognizerPictures
 
         #region Преобразует картинку в цифры 0.5 и -0.5, в специальный вид, удобный для сравнения со значением, которое находится в каждом пикселе картинки
 
-        private static void SaveBin(String path, String name, Bitmap bmp)
+        /// <summary>
+        /// Преобразует картинку в цифры 0.5 и -0.5, в специальный вид, удобный для сравнения со значением, которое находится в каждом пикселе картинки
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="name"></param>
+        /// <param name="bmp">Изображение</param>
+        /// <returns></returns>
+
+        private static string[] SaveBin(String path, String name, Bitmap bmp)
         {
 
             var w = bmp.Width;
@@ -307,22 +397,30 @@ namespace RecognizerPictures
                 }
             }
 
-            File.WriteAllLines(path + "\\" + name + ".in.txt", mas);
+            //File.WriteAllLines(path + "\\" + name + ".in.txt", mas);
+            //File.Copy(path + "\\" + name + ".in.txt", path + "\\"+"new"+"\\" + name + ".in.txt");
+            return mas;
         }
 
         #endregion
 
         #region Возвращает символ с полученной картинки
 
-        private string GetCharFromImage(string path)
+        /// <summary>
+        /// Возвращает символ с полученной картинки
+        /// </summary>
+        /// <param name="mas">Массив весов</param>
+        /// <returns></returns>
+
+        private string GetCharFromImage(string[] mas)
         {
-            if (!File.Exists(path))
-                return null;
+            /*if (!File.Exists(path))
+                return null;*/
 
             var x = new double[_net.GetX];
             double[] y;
 
-            string[] currFile = File.ReadAllLines(path);
+            string[] currFile = mas;//File.ReadAllLines(path);
 
             for (int i = 0; i < _net.GetX; i++)
             {
@@ -410,36 +508,51 @@ namespace RecognizerPictures
 
         #region Превращает картинку в черно-белую
 
+        /// <summary>
+        /// Превращает картинку в черно-белую
+        /// </summary>
+        /// <param name="list">Лист</param>
+        /// <param name="bm">Изображение</param>
+        /// <returns></returns>
+
         private Bitmap Filter(List<string> list, Bitmap bm)
         {
-            for (int i = 0; i < _myBitMap.Width; i++)
+            Bitmap bmm = bm;
+            for (int i = 0; i < bmm.Width; i++)
             {
-                for (int j = 0; j < _myBitMap.Height; j++)
+                for (int j = 0; j < bmm.Height; j++)
                 {
-                    Color cl = _myBitMap.GetPixel(i, j);
+                    Color cl = bmm.GetPixel(i, j);
                     if (colr(list, cl.Name))
                     {
-                        bm.SetPixel(i, j, Color.White);
+                        bmm.SetPixel(i, j, Color.White);
                     }
                 }
             }
-            for (int i = 0; i < _myBitMap.Width; i++)
+            for (int i = 0; i < bmm.Width; i++)
             {
-                for (int j = 0; j < _myBitMap.Height; j++)
+                for (int j = 0; j < bmm.Height; j++)
                 {
-                    Color cl = _myBitMap.GetPixel(i, j);
+                    Color cl = bmm.GetPixel(i, j);
                     if (String.Compare(cl.Name.ToString(), "ffffffff") != 0)
                     {
-                        bm.SetPixel(i, j, Color.Black);
+                        bmm.SetPixel(i, j, Color.Black);
                     }
                 }
             }
-            return bm;
+            return bmm;
         }
 
         #endregion
 
-        #region помогает закрасить картинку в черно-белый цвет
+        #region Помогает закрасить картинку в черно-белый цвет
+
+        /// <summary>
+        /// Помогает закрасить картинку в черно-белый цвет
+        /// </summary>
+        /// <param name="li">Лист</param>
+        /// <param name="name">Имя</param>
+        /// <returns></returns>
 
         private bool colr(List<string> li, string name)
         {
