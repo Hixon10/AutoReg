@@ -15,9 +15,9 @@ namespace Gui
         private readonly IAntiCaptcha _intellectBoard22AntiCaptcha;
         private readonly IAntiCaptcha _intellectBoard20AntiCaptcha;
         private readonly IAntiCaptcha _phpBBAntiCaptcha;
-        private readonly IntellectBoardReg _intellectBoard22Reg;
-        private readonly IntellectBoardReg _intellectBoard20Reg;
-        private readonly phpBBReg _phpBbReg;
+        private readonly RegBase _intellectBoard22Reg;
+        private readonly RegBase _intellectBoard20Reg;
+        private readonly RegBase _phpBbReg;
 
         private List<String> _nicks;
         private List<String> _passwords;
