@@ -34,6 +34,7 @@ namespace Gui
             InitializeComponent();
             backgroundWorkerIB22.WorkerReportsProgress = true;
             backgroundWorkerPHPBB.WorkerReportsProgress = true;
+            backgroundWorkerIB20.WorkerReportsProgress = true;
             _intellectBoard22AntiCaptcha = new IntellectBoard22AntiCaptcha();
             _intellectBoard20AntiCaptcha = new IntellectBoard20AntiCaptcha();
             _phpBBAntiCaptcha = new phpBBAntiCaptcha();
