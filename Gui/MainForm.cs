@@ -73,32 +73,16 @@ namespace Gui
                         backgroundWorkerPHPBB.RunWorkerAsync();
                     }
                 }
-
-                for (int i = 0; i < _possiblenumberAcc; i++)
+                
+                if (checkBoxUrlIB20.Checked)
                 {
-                    if (checkBoxUrlIB20.Checked)
+                    if (backgroundWorkerIB20.IsBusy != true)
                     {
-                        //Важно, используются левые данные для регистрации, для того чтобы не проходила регистрация
-                        if (_intellectBoard20Reg.reg(_urlIntellectBoard20Forum, _emails[0], _passwords[0], _nicks[0]) !=
-                            RegBase.Status.IncorrectCaptcha)
-                        {
-                            int digit = int.Parse(labelIntellectBoard20Stat.Text);
-                            labelIntellectBoard20Stat.Text = (digit + 1).ToString();
-                        }
+                        // Start the asynchronous operation.
+                        backgroundWorkerIB20.RunWorkerAsync();
                     }
-
-                    if (checkBoxUrlphpBB.Checked)
-                    {
-                        //Важно, используются левые данные для регистрации, для того чтобы не проходила регистрация
-                        if (_phpBbReg.reg(_urlphpBbForum, _emails[0], _passwords[0], _nicks[0]) !=
-                            RegBase.Status.IncorrectCaptcha)
-                        {
-                            int digit = int.Parse(labelphpBBStat.Text);
-                            labelphpBBStat.Text = (digit + 1).ToString();
-                        }
-                    }
-                    this.Refresh();
                 }
+
             }
             else
             {
@@ -247,6 +231,33 @@ namespace Gui
         private void backgroundWorkerPHPBB_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             MessageBox.Show("Регистрация на форуме phpBB завершена!");
+        }
+
+        private void backgroundWorkerIB20_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+            int progress = 0;
+
+            for (int i = 0; i < _possiblenumberAcc; i++)
+            {
+                //Важно, используются левые данные для регистрации, для того чтобы не проходила регистрация
+                if (_intellectBoard20Reg.reg(_urlIntellectBoard20Forum, _emails[0], _passwords[0], _nicks[0]) !=
+                    RegBase.Status.IncorrectCaptcha)
+                {
+                    progress++;
+                    worker.ReportProgress(progress);
+                }
+            }
+        }
+
+        private void backgroundWorkerIB20_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            labelIntellectBoard20Stat.Text = e.ProgressPercentage.ToString();
+        }
+
+        private void backgroundWorkerIB20_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            MessageBox.Show("Регистрация на форуме IntellectBoard20 завершена!");
         }
 
 
